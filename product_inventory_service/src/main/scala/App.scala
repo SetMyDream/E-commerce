@@ -6,7 +6,7 @@ import org.http4s.server.blaze._
 import scala.concurrent.ExecutionContext.global
 
 object App extends IOApp {
-  val host = sys.env.getOrElse("SERVICE_HOST", "localhost")
+  val host = sys.env.getOrElse("SERVICE_HOST", "0.0.0.0")
   val port = sys.env.getOrElse("SERVICE_PORT", "8080").toInt
 
   val routes = HttpRoutes.of[IO] {

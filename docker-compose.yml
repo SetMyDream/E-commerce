@@ -1,0 +1,45 @@
+services:
+
+  chat:
+    build:
+      context: .
+      target: chat_service
+    volumes:
+      - ./chat_service/:/app/
+    environment:
+      SERVICE_PORT: 8080
+    ports:
+      - "8081:8080"
+
+  dispute_management:
+    build:
+      context: .
+      target: dispute_management_service
+    volumes:
+      - ./dispute_management_service/:/app/
+    environment:
+      SERVICE_PORT: 8080
+    ports:
+      - "8082:8080"
+
+  product_inventory:
+    build:
+      context: .
+      target: product_inventory_service
+    volumes:
+      - ./product_inventory_service/:/app/
+    environment:
+      SERVICE_PORT: 8080
+    ports:
+      - "8083:8080"
+
+  reporting_service:
+    build:
+      context: .
+      target: reporting_service
+    volumes:
+      - ./reporting_service/:/app/
+    environment:
+      SERVICE_PORT: 8080
+    ports:
+      - "8084:8080"
