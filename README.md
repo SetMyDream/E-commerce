@@ -37,7 +37,7 @@
 - Password encryption (SHA-256?)
 - Authentication with username and password
 - Authorization for other services
-  :::info
+
 #### Endpoints
 1. Home page (with sign up and sign in)
    (is_logged_in :Boolean): main_url     //supposed to work as filter
@@ -49,14 +49,12 @@
 > (): users_all_url
 5. Personal user page
 > (user_id: ID): personal_page_url
-:::
+
 #### Used
 - Play - because it's one of the biggest services in the app, using a batteries-included framework might be a better option for quick and optimal rescourse management
 
 ---
 ### User to user chat
-`- Akka. Each participant is represented with designated actor, additionally actor per chat group should be used`
-`- Akka-http`
 
 - A user can initiate a one to one chat with some other specific user
 - A user can initiate a group chat with some other specific users
@@ -66,7 +64,7 @@
     - list all disputes in which the user is involved
     - as a seller, approve refund as an action to a specific dispute
     - as a seller, request a product back as an action to a specific dispute
-      :::info
+
 #### Endpoints
 1. Initiate a 1-to-1 chat
 > (user_id: ID): chat_id
@@ -76,7 +74,7 @@
 > (chat_id: ID, message: String): Ok ===>
 > if (message is command) {proccess(command)};
 > if (command fails) {send a message as a reply to the command message}
-:::
+
 #### Used
 - ***Akka*** — concurrency is important for the chat service. Also actor system usage is intuitive for conversation participants
 - ***Akka-http*** — implement a full server- and client-side HTTP stack **on top** of **akka-actor** and **akka-stream**. It's toolkit for providing and consuming HTTP-based services.
@@ -91,7 +89,7 @@
     - Users should be able to buy other users' products if they have enough currency
     - Users should be able to see all products that they bought
     - Buyer can send a product back if in the proccess of dispute, the seller requested it
-      :::info
+
 #### Endpoints
 1. List all categories
 > (): List[category_data]
@@ -109,7 +107,7 @@
 > (product_id): Ok
 8. Return a bought product
 > (product_id): Ok
-:::
+
 #### Used
 - Play - same as for user management: better option for quick and optimal rescourse management, quick realization
 
@@ -138,29 +136,28 @@
           item arrives after a certain time)
         - The seller gives a refund to the buyer
           `Should be approved by the seller`
-          :::info
+
 #### Endpoints
 1. List all disputes, where the user is involved
 > (user_id: ID): JSON(disputes_list)
 2. Go to dispute
 > (dispute_id: ID): JSON(dispute_page)
-:::
+
 #### Used
 - Akka-http & tapir - because there are not so many endpoints
 
+---
 ### Reporting service
 `reports are regarding user stats, disputes, chat stats`
 - Stats on users
-  -- Users quantity
-  -- New users for last [time period]
-  -- ...
+  - Users quantity
+  - New users for last [time period]
+  - ...
 - Stats on disputes
 - Chat stats
 
-:::info
 #### Endpoints
 _To Be Discussed_
-:::
 
 #### Used
 _To Be Discussed_
