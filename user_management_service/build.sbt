@@ -2,10 +2,24 @@ name := "user_management"
 
 scalaVersion := "2.13.4"
 
+enablePlugins(PlayService, PlayLayoutPlugin)
+
 libraryDependencies ++= {
-  val http4sVersion = "0.21.+"
   Seq(
-    "org.http4s" %% "http4s-dsl" % http4sVersion,
-    "org.http4s" %% "http4s-blaze-server" % http4sVersion
+    guice,
+    "net.codingwell" %% "scala-guice" % "4.2.6",
+    "net.logstash.logback" % "logstash-logback-encoder" % "6.2",
+    "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
   )
 }
+
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-Ywarn-numeric-widen",
+  "-Xfatal-warnings"
+)
+scalacOptions in Test ++= Seq("-Yrangepos")
+
+autoAPIMappings := true
