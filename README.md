@@ -1,7 +1,6 @@
 # E-commerce Sigma Software scala interns web app
 
-[![Services](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-Services-e10079.svg)](SERVICES.md)
-
+## Services
 [![Services](https://img.shields.io/badge/%F0%9F%91%A9%E2%80%8D%F0%9F%94%A7-Chat--service-blue.svg)](chat_service/README.md)
 [![Services](https://img.shields.io/badge/%F0%9F%A7%91%E2%80%8D%F0%9F%92%BB-Dispute%20management%20system-blue.svg)](dispute_management_service/README.md)
 [![Services](https://img.shields.io/badge/%F0%9F%93%A6⚙-Product%20inventory%20service-blue.svg)](product_inventory_service/README.md)
