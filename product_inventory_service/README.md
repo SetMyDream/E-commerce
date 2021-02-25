@@ -1,4 +1,6 @@
 # Product inventory service
+[![Services](https://img.shields.io/badge/%E2%AC%85-Back-green.svg)](../README.md)
+
 - Product inventory contains at least two different categories of products with at least 3 products in each
 - Registered users could buy products from system or other users
     - Users should be able to add/update/delete their products

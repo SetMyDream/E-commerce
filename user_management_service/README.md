@@ -1,4 +1,6 @@
 # User management service
+[![Services](https://img.shields.io/badge/%E2%AC%85-Back-green.svg)](../README.md)
+
 - CRUD users
 - Users have their wallets
   `registered users are provided with some significant amount of in-system currency`
