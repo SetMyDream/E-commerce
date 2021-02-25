@@ -1,9 +1,29 @@
 name := """product_inventory"""
 
 version := "1.0-SNAPSHOT"
-
+val AkkaVersion = "2.5.31"
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, DockerPlugin)
+  .settings(
+    name := """play-scala-slick-example""",
+    version := "2.8.x",
+    scalaVersion := "2.13.4",
+    libraryDependencies ++= Seq(
+      guice,
+      "com.typesafe.play" %% "play-slick" % "5.0.0",
+      "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0",
+      "com.typesafe.slick" %% "slick" % "3.3.2",
+      "org.postgresql" % "postgresql" % "42.1.4",
+      "com.lightbend.akka" %% "akka-stream-alpakka-slick" % "2.0.2",
+      "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+      specs2 % Test,
+    ),
+    scalacOptions ++= Seq(
+      "-feature",
+      "-deprecation",
+      "-Xfatal-warnings"
+    )
+  )
 
 scalaVersion := "2.12.3"
 
