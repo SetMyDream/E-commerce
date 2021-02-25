@@ -26,7 +26,7 @@
 - Swagger
 > Automatic API documentation
 
-[![Services](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/SetMyDream/E-commerce/SERVICES.md)
+[![Services](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](SERVICES.md)
 
 [![Services](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/SetMyDream/E-commerce/chat_service/README.md)
 
