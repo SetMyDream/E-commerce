@@ -1,0 +1,3 @@
+GET     /                           main.scala.controller.ApplicationController.index
+POST    /add                        main.scala.controller.ApplicationController.addProduct
+GET     /delete/:id                 main.scala.controller.ApplicationController.deleteProduct(id : Long)
