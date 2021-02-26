@@ -1,9 +1,14 @@
 package main.scala.util
 
-import slick.jdbc.MySQLProfile.api._
-import play.components
+import com.google.inject.Inject
+import main.scala.model.Product
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
 
-class ProductTableDef(tag: Tag) extends Table[User](tag, "user") {
+import scala.concurrent.{ExecutionContext, Future}
+
+class ProductTableDef(tag: Tag) extends Table[Product](tag, "product") {
 
   def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def firstName = column[String]("first_name")
@@ -12,34 +17,34 @@ class ProductTableDef(tag: Tag) extends Table[User](tag, "user") {
   def email = column[String]("email")
 
   override def * =
-    (id, firstName, lastName, mobile, email) <>(User.tupled, User.unapply)
+    (id, firstName, lastName, mobile, email) <>(Product.tupled, Product.unapply)
 }
 
-class Users @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
+class Products @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
                       (implicit executionContext: ExecutionContext)
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
   // the HasDatabaseConfigProvider trait gives access to the
   // dbConfig object that we need to run the slick queries
 
-  val users = TableQuery[ProductTableDef]
+  val products = TableQuery[ProductTableDef]
 
-  def add(user: User): Future[String] = {
-    dbConfig.db.run(users += user).map(res => "User successfully added").recover {
+  def add(product: Product): Future[String] = {
+    dbConfig.db.run(products += product).map(res => "Product successfully added").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
 
   def delete(id: Long): Future[Int] = {
-    dbConfig.db.run(users.filter(_.id === id).delete)
+    dbConfig.db.run(products.filter(_.id === id).delete)
   }
 
-  def get(id: Long): Future[Option[User]] = {
-    dbConfig.db.run(users.filter(_.id === id).result.headOption)
+  def get(id: Long): Future[Option[Product]] = {
+    dbConfig.db.run(products.filter(_.id === id).result.headOption)
   }
 
-  def listAll: Future[Seq[User]] = {
-    dbConfig.db.run(users.result)
+  def listAll: Future[Seq[Product]] = {
+    dbConfig.db.run(products.result)
   }
 
 }

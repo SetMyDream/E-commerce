@@ -16,6 +16,8 @@ class ApplicationController @Inject()
       Ok(views.html.index(ProductForm.form, products))
     }
   }
+  def filesMatching(matcher: String => Boolean) =
+    for (file <- filesHere; if matcher(file.getName)) yield file
 
   def addProduct() = Action.async { implicit request: Request[AnyContent] =>
     ProductForm.form.bindFromRequest.fold(

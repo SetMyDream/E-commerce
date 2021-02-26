@@ -1,24 +1,27 @@
 package main.scala.model
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 case class Product(id: Long, title: String, description: String, userId: Long, emailOfSeller: String)
 
 class Products() {
 
   var products: Seq[Product] = Seq()
 
-  def add(product: Product): String = {
+  def add(product: Product): Future[String] = {
     products = products :+ product.copy(id = products.length) // manual id increment
-    "Product successfully added"
+    Future("Product successfully added")
   }
 
-  def delete(id: Long): Option[Int] = {
+  def delete(id: Long): Future[Int] = {
     val originalSize = products.length
     products = products.filterNot(_.id == id)
-    Some(originalSize - products.length) // returning the number of deleted products
+    Future(originalSize - products.length) // returning the number of deleted products
   }
 
-  def get(id: Long): Option[Product] = products.find(_.id == id)
+  def get(id: Long): Future[Option[Product]] = Future(products.find(_.id == id))
 
-  def listAll: Seq[Product] = products
+  def listAll: Future[Seq[Product]] = Future(products)
 
 }
