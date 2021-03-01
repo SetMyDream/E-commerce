@@ -2,7 +2,7 @@ name := """product_inventory"""
 
 version := "1.0-SNAPSHOT"
 val AkkaVersion = "2.5.31"
-lazy val root = (project in file("."))
+lazy val root = (project in file("/.."))
   .enablePlugins(PlayScala, DockerPlugin)
   .settings(
     name := """play-scala-slick-example""",
