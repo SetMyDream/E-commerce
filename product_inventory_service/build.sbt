@@ -25,8 +25,6 @@ lazy val root = (project in file("."))
     )
   )
 
-scalaVersion := "2.12.3"
-
 scalacOptions ++= Seq(
   // Warnings propogates as errors
   "-Xfatal-warnings",

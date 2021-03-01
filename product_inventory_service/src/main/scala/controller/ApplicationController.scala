@@ -1,10 +1,14 @@
 package main.scala.controller
 
+import main.scala.model.Product
 import main.scala.model.form.ProductForm
+import main.scala.service.ProductService
 import play.api.Logging
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.routing.Router.empty.routes
 
 import javax.inject.Inject
+import scala.concurrent.Future
 
 @Singleton
 class ApplicationController @Inject()
@@ -13,21 +17,19 @@ class ApplicationController @Inject()
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
     productService.listAllProducts map { products =>
-      Ok(views.html.index(ProductForm.form, products))
+      Ok(main.scala.views.index(ProductForm.form, products))
     }
   }
-  def filesMatching(matcher: String => Boolean) =
-    for (file <- filesHere; if matcher(file.getName)) yield file
 
   def addProduct() = Action.async { implicit request: Request[AnyContent] =>
     ProductForm.form.bindFromRequest.fold(
       // if any error in submitted data
       errorForm => {
         logger.warn(s"Form submission with error: ${errorForm.errors}")
-        Future.successful(Ok(views.html.index(errorForm, Seq.empty[Product])))
+        Future.successful(Ok (views.html.index(errorForm, Seq.empty[Product])))
       },
       data => {
-        val newProduct = Product(0, data.firstName, data.lastName, data.mobile, data.email)
+        val newProduct = Product(0, data.title, data.description, data.userId, data.emailOfSeller)
         productService.addProduct(newProduct).map( _ => Redirect(routes.ApplicationController.index()))
       })
   }
