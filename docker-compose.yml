@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
 
   chat:
@@ -43,3 +45,28 @@ services:
       SERVICE_PORT: 8080
     ports:
       - "8084:8080"
+
+  user_management:
+    build:
+      context: .
+      target: user_management_service
+    volumes:
+      - ./user_management_service/:/app/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_URL: localhost:9085/users
+    ports:
+      - "8085:9000"
+  
+  user_management_db:
+    image: postgres:13-alpine
+    user: postgres
+    volumes:
+      - ./user_management_service/.postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "9085:5432"
