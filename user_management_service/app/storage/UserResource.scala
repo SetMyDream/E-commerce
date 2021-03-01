@@ -1,4 +1,4 @@
-package user
+package storage
 
 import play.api.libs.json._
 
@@ -6,7 +6,7 @@ import play.api.libs.json._
 /**
  * DTO for displaying user information.
  */
-final case class UserResource(id: String, username: String)
+final case class UserResource(id: Option[Long], username: String)
 
 object UserResource {
   /**

@@ -1,11 +1,11 @@
-package user.v1
+package routers
 
+import controllers.UserController
 import play.api.routing.Router.Routes
-
-import javax.inject.Inject
 import play.api.routing.SimpleRouter
 import play.api.routing.sird._
-import user.UserController
+
+import javax.inject.Inject
 
 
 /**
@@ -13,6 +13,7 @@ import user.UserController
  */
 class UserRouter @Inject()(controller: UserController) extends SimpleRouter {
   override def routes: Routes = {
-    case GET(p"/$id") => controller.getUser(id)
+    case POST(p"/") => controller.createUser()
+    case GET(p"/${long(id)}") => controller.getUser(id)
   }
 }

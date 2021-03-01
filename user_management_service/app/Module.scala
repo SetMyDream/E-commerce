@@ -1,8 +1,8 @@
-import javax.inject._
 import com.google.inject.AbstractModule
+import storage.UserRepository
 import net.codingwell.scalaguice.ScalaModule
 import play.api.{Configuration, Environment}
-import user.{DummyUserRepository, UserRepository}
+import storage.db.UsersTableRepository
 
 
 /**
@@ -15,6 +15,6 @@ class Module (environment: Environment, configuration: Configuration)
     with ScalaModule {
 
   override def configure = {
-    bind[UserRepository].to[DummyUserRepository]
+    bind[UserRepository].to[UsersTableRepository]
   }
 }
