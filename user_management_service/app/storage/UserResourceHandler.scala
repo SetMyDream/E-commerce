@@ -22,10 +22,12 @@ class UserResourceHandler @Inject()(
 
   def create(_username: String): Future[Either[StorageException, Long]] = {
     val username = _username.strip
-    if (username.isEmpty) returnFieldErrors("username" -> "Username can't be blank")
-    else if (username.length > 20) returnFieldErrors("username" -> "Username is too long")
-    else if (username.length < 4) returnFieldErrors("username" -> "Username is too short")
-    else userRepository.create(username)
+    username match {
+      case "" => returnFieldErrors("username" -> "Username can't be blank")
+      case u if u.length > 20 => returnFieldErrors("username" -> "Username is too long")
+      case u if u.length < 4 => returnFieldErrors("username" -> "Username is too short")
+      case u => userRepository.create(u)
+    }
   }
 
   private def returnFieldErrors(errors: (String, JsValueWrapper)*
