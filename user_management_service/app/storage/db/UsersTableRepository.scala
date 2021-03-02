@@ -23,6 +23,9 @@ class UsersTableRepository @Inject()(
   import profile.api._
 
 
+  /**
+   * Slick representation of "users" table in the database
+   */
   private[db] class UsersTable(tag: Tag) extends
                     Table[UserResource](tag, "users") {
 
@@ -52,7 +55,6 @@ class UsersTableRepository @Inject()(
       }
 
   def get(username: String): Future[Option[UserResource]] = db.run {
-    println(users.filter(_.username === username).result.statements)
     users.filter(_.username === username).result.headOption
   }
 

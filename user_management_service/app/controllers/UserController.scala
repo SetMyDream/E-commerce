@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 /**
- * Takes HTTP requests and produces JSON.
+ * Takes HTTP requests and produces response futures.
  */
 class UserController @Inject()(cc: UserControllerComponents)(
     implicit ec: ExecutionContext)
