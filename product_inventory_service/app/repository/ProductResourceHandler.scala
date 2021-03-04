@@ -1,7 +1,6 @@
-package main.scala.repository
+package repository
 
-import main.scala.exception.StorageException
-import main.scala.exception.StorageException.IllegalFieldValuesException
+import exception.StorageException
 import play.api.libs.json.Json
 import play.api.libs.json.Json.JsValueWrapper
 

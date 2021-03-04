@@ -1,9 +1,9 @@
-package main.scala.controller
+package controller
 
-import main.scala.repository.ProductResourceHandler
 import play.api.http.FileMimeTypes
 import play.api.i18n.{Langs, MessagesApi}
 import play.api.mvc._
+import repository.ProductResourceHandler
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext

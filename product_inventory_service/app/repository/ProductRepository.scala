@@ -1,9 +1,9 @@
-package main.scala.repository
+package repository
 
-import main.scala.exception.StorageException
+import exception.StorageException
+import model.Product
 
 import scala.concurrent.Future
-import main.scala.model.Product
 
 /**
  * Provides access to the user data stored somewhere

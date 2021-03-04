@@ -1,4 +1,4 @@
-package main.scala.model
+package model
 
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global

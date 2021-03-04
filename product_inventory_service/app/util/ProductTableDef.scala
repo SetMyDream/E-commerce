@@ -1,7 +1,7 @@
-package main.scala.util
+package util
 
 import com.google.inject.Inject
-import main.scala.model.Product
+import model.Product
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._

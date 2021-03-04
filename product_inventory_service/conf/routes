@@ -1,3 +1,4 @@
 GET     /                           main.scala.controller.ProductController.index
 POST    /add                        main.scala.controller.ProductController.addProduct
 GET     /delete/:id                 main.scala.controller.ProductController.deleteProduct(id : Long)
+->      /product                    main.scala.router.ProductRouter

@@ -1,8 +1,7 @@
-package main.scala.repository
+package repository
 
-import main.scala.exception.StorageException
-import main.scala.exception.StorageException.UnknownDatabaseError
-import main.scala.model.Product
+import exception.StorageException
+import model.Product
 import org.postgresql.util.PSQLException
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile

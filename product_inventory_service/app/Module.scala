@@ -1,9 +1,7 @@
-package main.scala
-
 import com.google.inject.AbstractModule
-import main.scala.repository.{ProductRepository, ProductTableRepository}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.{Configuration, Environment}
+import repository.{ProductRepository, ProductTableRepository}
 
 
 /**

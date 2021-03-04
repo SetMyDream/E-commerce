@@ -1,4 +1,4 @@
-package main.scala.exception
+package exception
 
 import play.api.libs.json.JsObject
 

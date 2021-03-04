@@ -1,4 +1,4 @@
-package main.scala.model.form
+package model.form
 
 import play.api.data.Form
 import play.api.data.Forms.{email, longNumber, mapping, nonEmptyText}
