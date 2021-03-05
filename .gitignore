@@ -1,6 +1,6 @@
 *.xml
 *.iml
-/.idea
+**/.idea/*
 /.idea_modules
 **/.bsp/*
 **/target/*
@@ -11,6 +11,7 @@
 .project
 .classpath
 .settings
+.postgres_data
 .DS_Store
 .metals
 .bloop
