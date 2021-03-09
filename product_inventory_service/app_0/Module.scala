@@ -1,8 +1,7 @@
 import com.google.inject.AbstractModule
-import storage.ProductRepository
 import net.codingwell.scalaguice.ScalaModule
 import play.api.{Configuration, Environment}
-import storage.db.ProductsTableRepository
+import repository.{ProductRepository, ProductTableRepository}
 
 
 /**
@@ -15,6 +14,6 @@ class Module (environment: Environment, configuration: Configuration)
     with ScalaModule {
 
   override def configure = {
-    bind[ProductRepository].to[ProductsTableRepository]
+    bind[ProductRepository].to[ProductTableRepository]
   }
 }

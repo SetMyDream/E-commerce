@@ -1,4 +1,4 @@
-GET     /                           main.scala.controller.ProductController.index
-POST    /add                        main.scala.controller.ProductController.addProduct
-GET     /delete/:id                 main.scala.controller.ProductController.deleteProduct(id : Long)
-->      /product                    main.scala.router.ProductRouter
+GET     /                           controller.ProductController.index
+POST    /add                        controller.ProductController.addProduct
+GET     /delete/:id                 controller.ProductController.deleteProduct(id : Long)
+->      /product                    router.ProductRouter

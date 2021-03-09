@@ -17,6 +17,7 @@ lazy val root = (project in file("."))
       "com.lightbend.akka" %% "akka-stream-alpakka-slick" % "2.0.2",
       "net.codingwell" %% "scala-guice" % "4.2.6",
       "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+      "org.scalatest" %% "scalatest" % "3.2.5" % "test",
       specs2 % Test,
     ),
     scalacOptions ++= Seq(

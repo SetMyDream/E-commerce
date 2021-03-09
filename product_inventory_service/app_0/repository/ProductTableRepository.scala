@@ -1,6 +1,7 @@
 package repository
 
 import exception.StorageException
+import exception.StorageException.UnknownDatabaseError
 import model.Product
 import org.postgresql.util.PSQLException
 import play.api.db.slick.DatabaseConfigProvider
@@ -30,6 +31,10 @@ class ProductTableRepository @Inject()(
 
     def producttitle = column[String]("producttitle", NotNull)
 
+    def description = column[String]("producttitle")
+
+    def userId = column[Long]("userId", NotNull, O.AutoInc)
+
     def * = (id.?, producttitle) <>
       ((ProductResource.apply _).tupled, ProductResource.unapply)
 
@@ -38,7 +43,7 @@ class ProductTableRepository @Inject()(
 
   val products = TableQuery[ProductsTable]
 
-  def create(producttitle: String): Future[Either[StorageException, Long]] =
+  def create(producttitle: String, description: String, userId: Long): Future[Either[StorageException, Long]] =
     db.run((products returning products.map(_.id)) += Product(None, producttitle, description, userId))
       .map(Right(_))
       .recoverWith {

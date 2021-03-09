@@ -16,12 +16,6 @@ class ProductController @Inject()
 (cc: ControllerComponents, productService: ProductService)
   extends AbstractController(cc) with Logging {
 
-  def index() = Action.async { implicit request: Request[AnyContent] =>
-    productService.listAllProducts map { products =>
-      Ok(main.scala.views.index(ProductForm.form, products))
-    }
-  }
-
   def getProduct(id: Long): Action[AnyContent] = Action.async { implicit request =>
     productResourceHandler.find(id).collect {
       case Some(userResource) => Ok(Json.toJson(userResource))

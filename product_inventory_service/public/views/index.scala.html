@@ -1,4 +1,4 @@
-@(productForm: Form[model.UserFormData],products : Seq[model.User])(implicit request: RequestHeader)
+@(productForm: Form[model.ProductFormData],products : Seq[model.User])(implicit request: RequestHeader)
 @main() {
 
 <form id="product-data-form" role="form" action='@routes.ApplicationController.addUser()' method="post" class="form-horizontal" align="center" autocomplete="off">

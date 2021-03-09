@@ -13,7 +13,6 @@ import scala.concurrent.ExecutionContext
  * Packages up the component dependencies for the post controller.
  *
  * This is a good way to minimize the surface area exposed to the controller, so the
- * controller only has to have one thing injected.
  */
 case class ProductControllerComponents @Inject()(
     productResourceHandler: ProductResourceHandler,
@@ -26,7 +25,7 @@ case class ProductControllerComponents @Inject()(
     extends ControllerComponents
 
 /**
- * To make integrating some UserController dependencies easier
+ * To make integrating some ProductController dependencies easier
  */
 class ProductBaseController @Inject()(pcc: ProductControllerComponents)
     extends BaseController {
@@ -34,3 +33,4 @@ class ProductBaseController @Inject()(pcc: ProductControllerComponents)
   override protected def controllerComponents: ControllerComponents = pcc
 
   def productResourceHandler: ProductResourceHandler = pcc.productResourceHandler
+}
