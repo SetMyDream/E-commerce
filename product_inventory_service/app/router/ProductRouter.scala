@@ -1,4 +1,4 @@
-package routers
+package router
 
 import controllers.ProductController
 import play.api.routing.Router.Routes
@@ -15,5 +15,10 @@ class ProductRouter @Inject()(controller: ProductController) extends SimpleRoute
   override def routes: Routes = {
     case POST(p"/") => controller.createProduct()
     case GET(p"/${long(id)}") => controller.getProduct(id)
+    case GET(p"/") => controller.index
+    case GET(p"/delete/${long(id)}") => controller.deleteProduct(id)
+//    case POST    /add                        controller.ProductController.addProduct
+//    case GET     /delete/:id                 controller.ProductController.deleteProduct(id : Long)
   }
+
 }

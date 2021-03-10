@@ -14,8 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ProductsTableRepository @Inject()(
-                        dbConfigProvider: DatabaseConfigProvider
-                        )(implicit ec: ExecutionContext) extends ProductRepository {
+                                         dbConfigProvider: DatabaseConfigProvider
+                                       )(implicit ec: ExecutionContext) extends ProductRepository {
 
   protected val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -24,27 +24,28 @@ class ProductsTableRepository @Inject()(
 
 
   /**
-   * Slick representation of "users" table in the database
+   * Slick representation of "products" table in the database
    */
   private[db] class ProductsTable(tag: Tag) extends
-                    Table[ProductResource](tag, "users") {
+    Table[ProductResource](tag, "products") {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def productname = column[String]("productname", NotNull)
 
-    def * = (id.?, productname) <>
+    def producttitle = column[String]("productname", NotNull)
+
+    def * = (id.?, producttitle) <>
       ((ProductResource.apply _).tupled, ProductResource.unapply)
 
-    def idxProductname = index("idx_username", productname, unique = true)
+    def idxProductname = index("idx_username", producttitle, unique = true)
   }
 
   /**
-   * The starting point for all queries on the USERS table.
+   * The starting point for all queries on the PRODUCTS table.
    */
-  val users = TableQuery[ProductsTable]
+  val products = TableQuery[ProductsTable]
 
-  def create(username: String): Future[Either[StorageException, Long]] =
-    db.run((users returning users.map(_.id)) += ProductResource(None, username))
+  def create(producttitle: String): Future[Either[StorageException, Long]] =
+    db.run((products returning products.map(_.id)) += ProductResource(None, producttitle))
       .map(Right(_))
       .recoverWith {
         case e: PSQLException => Future(Left(UnknownDatabaseError(cause = Some(e))))
@@ -52,11 +53,23 @@ class ProductsTableRepository @Inject()(
       }
 
   def get(producttitle: String): Future[Option[ProductResource]] = db.run {
-    users.filter(_.productname === producttitle).result.headOption
+    products.filter(_.producttitle === producttitle).result.headOption
   }
 
   def get(id: Long): Future[Option[ProductResource]] = db.run {
-    users.filter(_.id === id).result.headOption
+    products.filter(_.id === id).result.headOption
   }
 
-}
+  /**
+   * Delete a ProductResource on a specific product by id
+   */
+  override def delete(id: Long): Future[Int] = db.run {
+    products.filter(_.id === id).delete
+  }
+
+  /**
+   * Delete a ProductResource on a specific product by title
+   */
+  override def delete(producttitle: String): Future[Int] = db.run {
+    products.filter(_.producttitle === producttitle).delete
+  }

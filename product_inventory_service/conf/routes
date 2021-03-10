@@ -1,4 +1,1 @@
-GET     /                           controller.ProductController.index
-POST    /add                        controller.ProductController.addProduct
-GET     /delete/:id                 controller.ProductController.deleteProduct(id : Long)
 ->      /product                    router.ProductRouter

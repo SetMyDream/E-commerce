@@ -2,7 +2,6 @@ package storage
 
 import play.api.libs.json._
 
-
 /**
  * DTO for displaying user information.
  */

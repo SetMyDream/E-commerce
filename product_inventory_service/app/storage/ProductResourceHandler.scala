@@ -12,12 +12,17 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
  * Controls access to the backend data, returning [[ProductResource]]
  */
-class ProductResourceHandler @Inject()(
-    userRepository: ProductRepository)(
-    implicit ec: ExecutionContext) {
+class ProductResourceHandler @Inject()(productRepository: ProductRepository)(
+  implicit ec: ExecutionContext) {
 
   def find(id: Long): Future[Option[ProductResource]] = {
-    userRepository.get(id)
+    productRepository.get(id)
+  }
+
+  /** need implement deletion
+   * */
+  def delete(id: Long): Future[Option[ProductResource]] = {
+    productRepository.delete(id)
   }
 
   def create(_username: String): Future[Either[StorageException, Long]] = {
@@ -26,7 +31,7 @@ class ProductResourceHandler @Inject()(
       case "" => returnFieldErrors("username" -> "Username can't be blank")
       case u if u.length > 20 => returnFieldErrors("username" -> "Username is too long")
       case u if u.length < 4 => returnFieldErrors("username" -> "Username is too short")
-      case u => userRepository.create(u)
+      case u => productRepository.create(u)
     }
   }
 
