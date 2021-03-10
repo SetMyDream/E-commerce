@@ -24,7 +24,7 @@ class UserService @Inject()(
    */
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
     Try(loginInfo.providerKey.toLong) match {
-      case Failure(_) => Future(None)
+      case Failure(_) => Future.successful(None)
       case util.Success(userId) =>
         userRepository.get(userId).map(userOption =>
           userOption.map(user => User(userId, user.username))
