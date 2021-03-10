@@ -1,10 +1,11 @@
 package storage.db
 
 import exceptions.StorageException
-import exceptions.StorageException.{UnknownDatabaseError}
+import exceptions.StorageException.UnknownDatabaseError
 import org.postgresql.util.PSQLException
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
+import slick.jdbc.ResultSetHoldability.Default
 import slick.sql.SqlProfile.ColumnOption.NotNull
 import storage.{ProductRepository, ProductResource}
 
@@ -33,10 +34,14 @@ class ProductsTableRepository @Inject()(
 
     def producttitle = column[String]("productname", NotNull)
 
-    def * = (id.?, producttitle) <>
+    def productdescription = column[String]("description")
+
+    def * = (id.?, producttitle, productdescription) <>
       ((ProductResource.apply _).tupled, ProductResource.unapply)
 
     def idxProductname = index("idx_username", producttitle, unique = true)
+
+    def isDeleted = column[Boolean]("deleted", O.Default(false))
   }
 
   /**
@@ -45,7 +50,7 @@ class ProductsTableRepository @Inject()(
   val products = TableQuery[ProductsTable]
 
   def create(producttitle: String): Future[Either[StorageException, Long]] =
-    db.run((products returning products.map(_.id)) += ProductResource(None, producttitle))
+    db.run((products returning products.map(_.id)) += ProductResource(None, producttitle, "No description"))
       .map(Right(_))
       .recoverWith {
         case e: PSQLException => Future(Left(UnknownDatabaseError(cause = Some(e))))
@@ -53,23 +58,23 @@ class ProductsTableRepository @Inject()(
       }
 
   def get(producttitle: String): Future[Option[ProductResource]] = db.run {
-    products.filter(_.producttitle === producttitle).result.headOption
+    products.filter(_.producttitle === producttitle).filter(_.isDeleted === false).result.headOption
   }
 
   def get(id: Long): Future[Option[ProductResource]] = db.run {
-    products.filter(_.id === id).result.headOption
+    products.filter(_.id === id).filter(_.isDeleted === false).result.headOption
   }
 
   /**
    * Delete a ProductResource on a specific product by id
    */
-  override def delete(id: Long): Future[Int] = db.run {
-    products.filter(_.id === id).delete
+  override def delete(id: Long): Future[Int] = {
+    db.run(products.filter(_.id === id).update()
   }
 
-  /**
-   * Delete a ProductResource on a specific product by title
-   */
-  override def delete(producttitle: String): Future[Int] = db.run {
-    products.filter(_.producttitle === producttitle).delete
-  }
+/**
+ * Delete a ProductResource on a specific product by title
+ */
+override def delete (producttitle: String): Future[Int] = db.run {
+  products.filter (_.producttitle === producttitle).delete
+}

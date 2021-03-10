@@ -17,7 +17,7 @@ class ProductController @Inject()(cc: ProductControllerComponents)(
 
   def deleteProduct(id: Long): Action[AnyContent] = { implicit request =>
     productResourceHandler.delete(id).collect {
-      case Some(productResource) => Ok(Json.toJson(s"${productResource.username} with id ${productResource.id} successfully deleted!"))
+      case Some(productResource) => Ok(Json.toJson(s"${productResource.producttitle} with id ${productResource.id} successfully deleted!"))
       case None => Ok(Json.toJson(s"No product found!"))
     }
   }
