@@ -1,8 +1,9 @@
-import com.google.inject.AbstractModule
 import storage.UserRepository
-import net.codingwell.scalaguice.ScalaModule
-import play.api.{Configuration, Environment}
 import storage.db.UsersTableRepository
+
+import play.api.{Configuration, Environment}
+import com.google.inject.AbstractModule
+import net.codingwell.scalaguice.ScalaModule
 
 
 /**

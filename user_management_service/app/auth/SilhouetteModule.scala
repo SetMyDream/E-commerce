@@ -1,19 +1,21 @@
 package auth
 
 import auth.models.User
+import storage.PasswordInfoRepository
+
 import com.google.inject.{AbstractModule, Provides}
-import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
+import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.repositories.{AuthInfoRepository, AuthenticatorRepository}
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, IdentityService}
-import com.mohiva.play.silhouette.api.util.{CacheLayer, Clock, IDGenerator, PasswordHasherRegistry, PasswordInfo}
-import com.mohiva.play.silhouette.impl.authenticators.{BearerTokenAuthenticator, BearerTokenAuthenticatorService, BearerTokenAuthenticatorSettings}
+import com.mohiva.play.silhouette.api.util._
+import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.util.{PlayCacheLayer, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.{CacheAuthenticatorRepository, DelegableAuthInfoRepository}
-import scala.concurrent.ExecutionContext.Implicits.global
 import net.codingwell.scalaguice.ScalaModule
-import storage.PasswordInfoRepository
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class SilhouetteModule extends AbstractModule with ScalaModule {

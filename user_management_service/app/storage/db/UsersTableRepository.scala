@@ -2,11 +2,12 @@ package storage.db
 
 import exceptions.StorageException
 import exceptions.StorageException.{UnknownDatabaseError, UsernameAlreadyTaken}
+import storage.{UserRepository, UserResource}
+
 import org.postgresql.util.PSQLException
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.sql.SqlProfile.ColumnOption.NotNull
-import storage.{UserRepository, UserResource}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

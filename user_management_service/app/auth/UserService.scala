@@ -1,9 +1,10 @@
 package auth
 
 import auth.models.User
+import storage.UserRepository
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
-import storage.UserRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
