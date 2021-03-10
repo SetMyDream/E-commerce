@@ -14,10 +14,12 @@ import scala.reflect.ClassTag
 
 
 @Singleton
-class PasswordInfoRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider,
-    val tableRepository: SilhouetteTableRepository
-  )(implicit ex: ExecutionContext) extends DelegableAuthInfoDAO[PasswordInfo]
-                                   with HasDatabaseConfigProvider[JdbcProfile] {
+class PasswordInfoRepository @Inject()(
+      protected val dbConfigProvider: DatabaseConfigProvider,
+      val tableRepository: SilhouetteTableRepository
+      )(implicit ex: ExecutionContext)
+      extends DelegableAuthInfoDAO[PasswordInfo]
+      with HasDatabaseConfigProvider[JdbcProfile] {
   import profile.api._
   import tableRepository._
 
@@ -42,7 +44,9 @@ class PasswordInfoRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   protected def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo) =
     searchPasswordInfo(loginInfo)
-      .map(dbPasswordInfo => (dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt))
+      .map(dbPasswordInfo => (dbPasswordInfo.hasher,
+                              dbPasswordInfo.password,
+                              dbPasswordInfo.salt))
       .update((authInfo.hasher, authInfo.password, authInfo.salt))
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = db.run {
@@ -55,7 +59,8 @@ class PasswordInfoRepository @Inject()(protected val dbConfigProvider: DatabaseC
         PasswordInfo(dbPI.hasher, dbPI.password, dbPI.salt)))
   }
 
-  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = db.run {
+  override def save(loginInfo: LoginInfo,
+                    authInfo: PasswordInfo): Future[PasswordInfo] = db.run {
     loginInfoQuery(loginInfo).joinLeft(passwordInfoQuery).on(_.id === _.loginInfoId)
     .result.head.flatMap {
       case (_, Some(_)) => updateAction(loginInfo, authInfo)
@@ -63,10 +68,12 @@ class PasswordInfoRepository @Inject()(protected val dbConfigProvider: DatabaseC
     }
   }.map(_ => authInfo)
 
-  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
+  override def add(loginInfo: LoginInfo,
+                   authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(addAction(loginInfo, authInfo)).map(_ => authInfo)
 
-  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
+  override def update(loginInfo: LoginInfo,
+                      authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(updateAction(loginInfo, authInfo)).map(_ => authInfo)
 
   override def remove(loginInfo: LoginInfo): Future[Unit] =

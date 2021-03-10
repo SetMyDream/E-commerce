@@ -15,8 +15,8 @@ import scala.util.{Failure, Try}
  * A custom identity service for the [[User]] model.
  */
 class UserService @Inject()(
-    userRepository: UserRepository
-  )(implicit ec: ExecutionContext) extends IdentityService[User] {
+      userRepository: UserRepository
+      )(implicit ec: ExecutionContext) extends IdentityService[User] {
 
   /**
    * Retrieves a user that matches the specified login info.

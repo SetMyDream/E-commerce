@@ -15,8 +15,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UsersTableRepository @Inject()(
-                        dbConfigProvider: DatabaseConfigProvider
-                        )(implicit ec: ExecutionContext) extends UserRepository {
+      dbConfigProvider: DatabaseConfigProvider
+      )(implicit ec: ExecutionContext) extends UserRepository {
 
   protected val dbConfig = dbConfigProvider.get[JdbcProfile]
 

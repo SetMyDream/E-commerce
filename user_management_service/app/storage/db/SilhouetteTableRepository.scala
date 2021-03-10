@@ -10,19 +10,20 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class SilhouetteTableRepository @Inject()(
-                             dbConfigProvider: DatabaseConfigProvider,
-                             val usersTableRepository: UsersTableRepository
-                             )(implicit ec: ExecutionContext) {
+      dbConfigProvider: DatabaseConfigProvider,
+      val usersTableRepository: UsersTableRepository
+      )(implicit ec: ExecutionContext) {
   protected val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
   import profile.api._
 
-  case class DBLoginInfo(id: Option[Long],
-                         providerID: String,
-                         providerKey: Long)
-  class LoginInfoTable(tag: Tag) extends
-      Table[DBLoginInfo](tag, "login_info") {
+  case class DBLoginInfo(
+             id: Option[Long],
+             providerID: String,
+             providerKey: Long)
+  class LoginInfoTable(tag: Tag)
+        extends Table[DBLoginInfo](tag, "login_info") {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def providerId = column[String]("provider_id")
@@ -37,12 +38,13 @@ class SilhouetteTableRepository @Inject()(
   }
   val loginInfos = TableQuery[LoginInfoTable]
 
-  case class DBPasswordInfo(login_info_id: Long,
-                            hasher: String,
-                            password: String,
-                            salt: Option[String] = None)
-  class PasswordInfoTable(tag: Tag) extends
-      Table[DBPasswordInfo](tag, "password_info") {
+  case class DBPasswordInfo(
+             login_info_id: Long,
+             hasher: String,
+             password: String,
+             salt: Option[String] = None)
+  class PasswordInfoTable(tag: Tag)
+        extends Table[DBPasswordInfo](tag, "password_info") {
 
     def loginInfoId = column[Long]("login_info_id")
     def hasher = column[String]("hasher")
@@ -58,7 +60,8 @@ class SilhouetteTableRepository @Inject()(
   }
   val passwordInfoQuery = TableQuery[PasswordInfoTable]
 
-  def loginInfoQuery(loginInfo: LoginInfo): Query[LoginInfoTable, DBLoginInfo, Seq] = {
+  def loginInfoQuery(
+      loginInfo: LoginInfo): Query[LoginInfoTable, DBLoginInfo, Seq] = {
     val providerKey = loginInfo.providerKey.toLong
     loginInfos.filter(dbLoginInfo =>
       dbLoginInfo.providerId === loginInfo.providerID &&

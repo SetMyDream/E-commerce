@@ -36,10 +36,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
   @Provides
   def provideEnvironment(
-    userService: UserService,
-    authenticatorService: AuthenticatorService[BearerTokenAuthenticator],
-    eventBus: EventBus
-  ): Environment[DefaultEnv] =
+      userService: UserService,
+      authenticatorService: AuthenticatorService[BearerTokenAuthenticator],
+      eventBus: EventBus): Environment[DefaultEnv] =
     Environment[DefaultEnv](
       userService,
       authenticatorService,
@@ -49,26 +48,22 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
   @Provides
   def provideAuthenticatorService(
-        repository: AuthenticatorRepository[BearerTokenAuthenticator],
-        idGenerator: IDGenerator,
-        clock: Clock
-      ): AuthenticatorService[BearerTokenAuthenticator] = {
-
+      repository: AuthenticatorRepository[BearerTokenAuthenticator],
+      idGenerator: IDGenerator,
+      clock: Clock): AuthenticatorService[BearerTokenAuthenticator] = {
     val settings = BearerTokenAuthenticatorSettings()
     new BearerTokenAuthenticatorService(settings, repository, idGenerator, clock)
   }
 
   @Provides
   def provideAuthenticatorRepository(
-    cacheLayer: CacheLayer
-  ): AuthenticatorRepository[BearerTokenAuthenticator] = {
+      cacheLayer: CacheLayer): AuthenticatorRepository[BearerTokenAuthenticator] = {
     new CacheAuthenticatorRepository(cacheLayer)
   }
 
   @Provides
   def provideAuthInfoRepository(
-    passwordInfoDao: DelegableAuthInfoDAO[PasswordInfo]
-  ): AuthInfoRepository = {
+      passwordInfoDao: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoRepository = {
     new DelegableAuthInfoRepository(passwordInfoDao)
   }
 }

@@ -12,10 +12,9 @@ import net.codingwell.scalaguice.ScalaModule
  * application starts.
  */
 class Module (environment: Environment, configuration: Configuration)
-  extends AbstractModule
-    with ScalaModule {
+      extends AbstractModule with ScalaModule {
 
-  override def configure = {
+  override def configure(): Unit = {
     bind[UserRepository].to[UsersTableRepository]
   }
 }
