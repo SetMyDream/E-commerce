@@ -23,10 +23,7 @@ libraryDependencies ++= {
   )
 }
 
-resolvers ++= Seq(
-  Resolver.jcenterRepo,
-  "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-)
+resolvers += "Atlassian's Maven Public Repository" at "https://packages.atlassian.com/maven-public/"
 
 scalacOptions ++= Seq(
   "-deprecation",
