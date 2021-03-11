@@ -11,6 +11,7 @@ libraryDependencies ++= {
   Seq(
     guice, ehcache,
     "net.codingwell" %% "scala-guice" % "4.2.6",
+    "org.typelevel" %% "cats-core" % "2.2.0",
     "net.logstash.logback" % "logstash-logback-encoder" % "6.2",
     "com.typesafe.play" %% "play-json-joda" % "2.9.2",
     "com.typesafe.play" %% "play-slick" % slickVersion,

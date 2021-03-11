@@ -3,6 +3,7 @@ package storage
 import exceptions.StorageException
 import exceptions.StorageException.IllegalFieldValuesException
 
+import cats.data.OptionT
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
@@ -27,6 +28,10 @@ class UserResourceHandler @Inject()(
     userRepository.get(id)
   }
 
+  def find(username: String): OptionT[Future, UserResource] = {
+    OptionT(userRepository.get(username))
+  }
+
   def create(_username: String): Future[Either[StorageException, Long]] = {
     val username = _username.strip
     checkForLength(username, "username") match {
@@ -37,7 +42,7 @@ class UserResourceHandler @Inject()(
 
   def register(
       _username: String,
-      _password: String): Future[Either[StorageException, LoginInfo]] = {
+      _password: String): Future[Either[StorageException, (LoginInfo, Long)]] = {
     val username = _username.strip
     val password = _password.strip
 
@@ -52,7 +57,7 @@ class UserResourceHandler @Inject()(
             val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
             val passInfo = passwordHasherRegistry.current.hash(password)
             authInfoRepository.add(loginInfo, passInfo)
-            loginInfo
+            (loginInfo, userId)
           }))
     }
   }

@@ -14,7 +14,8 @@ import javax.inject.Inject
  */
 class UserRouter @Inject()(controller: UserController) extends SimpleRouter {
   override def routes: Routes = {
-    case POST(p"/") => controller.register
+    case POST(p"/login") => controller.login
+    case POST(p"/register") => controller.register
     case GET(p"/${long(id)}") => controller.getUser(id)
   }
 }
