@@ -55,7 +55,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_URL: localhost:9085/users
+      JDBC_POSTGRES_URL: jdbc:postgresql://localhost:9085/users
     ports:
       - "8085:9000"
   
