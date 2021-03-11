@@ -30,7 +30,15 @@ class UserController @Inject()(cc: UserControllerComponents)(
     }
   }
 
-  def register: Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def isAuthenticated: Action[AnyContent] = silhouette.UserAwareAction { implicit request =>
+    request.identity match {
+      case Some(user) => Ok(Json.toJson(user))
+      case None => Forbidden("User is not authenticated")
+    }
+  }
+
+  def register: Action[JsValue] = silhouette.UnsecuredAction.async(
+      parse.json) { implicit request =>
     request.body.validate[CredentialsValidator].map { user =>
       userResourceHandler.register(user.username, user.password) flatMap {
         case Right((loginInfo, userId)) =>
