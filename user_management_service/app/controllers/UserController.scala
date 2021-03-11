@@ -34,7 +34,7 @@ class UserController @Inject()(cc: UserControllerComponents)(
           case e: UnknownDatabaseError => throw e.cause.get   // ServiceUnavailable
         }
       }
-    } getOrElse Future(BadRequest("Bad request format"))
+    } getOrElse Future.successful(BadRequest("Bad request format"))
   }
 
 }

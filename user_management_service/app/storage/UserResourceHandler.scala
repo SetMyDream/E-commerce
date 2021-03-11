@@ -13,8 +13,10 @@ import scala.concurrent.{ExecutionContext, Future}
  * Controls access to the backend data, returning [[UserResource]]
  */
 class UserResourceHandler @Inject()(
-    userRepository: UserRepository)(
-    implicit ec: ExecutionContext) {
+      val userRepository: UserRepository,
+      authInfoRepository: AuthInfoRepository,
+      passwordHasherRegistry: PasswordHasherRegistry
+      )(implicit ec: ExecutionContext) {
 
   def find(id: Long): Future[Option[UserResource]] = {
     userRepository.get(id)
