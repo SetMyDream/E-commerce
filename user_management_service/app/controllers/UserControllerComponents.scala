@@ -21,6 +21,8 @@ import scala.concurrent.ExecutionContext
  */
 case class UserControllerComponents @Inject()(
     userResourceHandler: UserResourceHandler,
+    silhouette: Silhouette[DefaultEnv],
+    credentialsProvider: CredentialsProvider,
     actionBuilder: DefaultActionBuilder,
     parsers: PlayBodyParsers,
     fileMimeTypes: FileMimeTypes,
@@ -38,4 +40,5 @@ class UserBaseController @Inject()(ucc: UserControllerComponents)
   override protected def controllerComponents: ControllerComponents = ucc
 
   def userResourceHandler: UserResourceHandler = ucc.userResourceHandler
+  def silhouette: Silhouette[DefaultEnv] = ucc.silhouette
 }

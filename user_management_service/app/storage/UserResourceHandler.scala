@@ -2,6 +2,11 @@ package storage
 
 import exceptions.StorageException
 import exceptions.StorageException.IllegalFieldValuesException
+
+import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.Json
 
@@ -24,16 +29,50 @@ class UserResourceHandler @Inject()(
 
   def create(_username: String): Future[Either[StorageException, Long]] = {
     val username = _username.strip
-    username match {
-      case "" => returnFieldErrors("username" -> "Username can't be blank")
-      case u if u.length > 20 => returnFieldErrors("username" -> "Username is too long")
-      case u if u.length < 4 => returnFieldErrors("username" -> "Username is too short")
-      case u => userRepository.create(u)
+    checkForLength(username, "username") match {
+      case Some(err) => returnFieldErrors(Seq(err))
+      case _ => userRepository.create(username)
     }
   }
 
-  private def returnFieldErrors(errors: (String, JsValueWrapper)*
-                               ): Future[Either[IllegalFieldValuesException, Long]] =
-    Future(Left(IllegalFieldValuesException(Json.obj(errors: _*))))
+  def register(
+      _username: String,
+      _password: String): Future[Either[StorageException, LoginInfo]] = {
+    val username = _username.strip
+    val password = _password.strip
+
+    Seq(
+      checkForLength(username, "username"),
+      checkForLength(password, "password")
+    ).flatten match {
+      case errors if errors.nonEmpty => returnFieldErrors(errors)
+      case _ =>
+        userRepository.create(username).map(userOrError =>
+          userOrError.map(userId => {
+            val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
+            val passInfo = passwordHasherRegistry.current.hash(password)
+            authInfoRepository.add(loginInfo, passInfo)
+            loginInfo
+          }))
+    }
+  }
+
+  private def checkForLength(
+    param: String,
+    param_name: String,
+    low: Int = 4,
+    high: Int = 20,
+  ): Option[(String, JsValueWrapper)] =
+    param match {
+      case "" => Some(param_name -> s"$param_name can't be empty")
+      case p if p.length > high => Some(param_name -> s"$param_name is too long")
+      case p if p.length < low => Some(param_name -> s"$param_name is too short")
+      case _ => None
+    }
+
+  private def returnFieldErrors(
+              errors: Seq[(String, JsValueWrapper)]
+              ): Future[Left[IllegalFieldValuesException, Nothing]] =
+    Future.successful(Left(IllegalFieldValuesException(Json.obj(errors: _*))))
 
 }

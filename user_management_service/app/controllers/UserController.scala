@@ -1,7 +1,10 @@
 package controllers
 
-import exceptions.StorageException.{IllegalFieldValuesException, UnknownDatabaseError, UsernameAlreadyTaken}
-import play.api.libs.json.Json
+import controllers.responces.Token
+import controllers.validators.RegisterValidator
+import exceptions.StorageException._
+
+import play.api.libs.json._
 import play.api.mvc._
 
 import javax.inject.Inject
@@ -22,6 +25,33 @@ class UserController @Inject()(cc: UserControllerComponents)(
     }
   }
 
+  def register: Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[RegisterValidator].map { user =>
+      userResourceHandler.register(user.username, user.password) flatMap {
+        case Right(loginInfo) =>
+          for {
+            authenticator <- silhouette.env.authenticatorService.create(loginInfo)
+            token <- silhouette.env.authenticatorService.init(authenticator)
+            result <- silhouette.env.authenticatorService.embed(token,
+              Ok(Json.toJson(
+                Token(token = token,
+                      expiresOn = authenticator.expirationDateTime)
+                ))
+            )
+          } yield result
+        case Left(e) => e match {
+          case e: UsernameAlreadyTaken =>
+            Future.successful(Conflict(e.msg))
+          case e: IllegalFieldValuesException =>
+            Future.successful(BadRequest(e.errors))
+          case e: UnknownDatabaseError =>
+            throw e.cause.get // ServiceUnavailable
+        }
+      }
+    }.recoverTotal(err => Future.successful(BadRequest(JsError.toJson(err))))
+  }
+
+  @Deprecated
   def createUser(): Action[AnyContent] = Action.async { implicit request =>
     request.body.asJson.flatMap { json =>
       (json \ "username").toOption
@@ -29,7 +59,7 @@ class UserController @Inject()(cc: UserControllerComponents)(
       userResourceHandler.create(username.toString).collect {
         case Right(id) => Ok(Json.obj("user_id" -> id))
         case Left(e) => e match {
-          case e: UsernameAlreadyTaken => BadRequest(e.msg)
+          case e: UsernameAlreadyTaken => Conflict(e.msg)
           case e: IllegalFieldValuesException => BadRequest(e.errors)
           case e: UnknownDatabaseError => throw e.cause.get   // ServiceUnavailable
         }
