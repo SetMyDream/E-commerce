@@ -2,9 +2,11 @@ package auth
 
 import auth.models.User
 import storage.PasswordInfoRepository
+import exceptions.handlers.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler}
 
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api._
+import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
 import com.mohiva.play.silhouette.api.repositories.{AuthInfoRepository, AuthenticatorRepository}
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, IdentityService}
 import com.mohiva.play.silhouette.api.util._
@@ -22,14 +24,18 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
   override def configure(): Unit = {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
+    bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
+    bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
+
     bind[CacheLayer].to[PlayCacheLayer]
-    bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[Clock].toInstance(Clock())
     bind[EventBus].toInstance(EventBus())
+    bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[PasswordHasherRegistry].toInstance(PasswordHasherRegistry(
         current = new BCryptSha256PasswordHasher(),
         deprecated = Seq()
     ))
+
     bind[IdentityService[User]].to[UserService]
     bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoRepository]
   }
