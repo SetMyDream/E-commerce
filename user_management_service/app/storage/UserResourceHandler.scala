@@ -35,7 +35,7 @@ class UserResourceHandler @Inject()(
   def create(_username: String): Future[Either[StorageException, Long]] = {
     val username = _username.strip
     checkForLength(username, "username") match {
-      case Some(err) => returnFieldErrors(Seq(err))
+      case Some(err) => returnFieldErrors(Seq(err)).map(Left(_))
       case _ => userRepository.create(username)
     }
   }
@@ -50,7 +50,7 @@ class UserResourceHandler @Inject()(
       checkForLength(username, "username"),
       checkForLength(password, "password")
     ).flatten match {
-      case errors if errors.nonEmpty => returnFieldErrors(errors)
+      case errors if errors.nonEmpty => returnFieldErrors(errors).map(Left(_))
       case _ =>
         userRepository.create(username).map(userOrError =>
           userOrError.map(userId => {
@@ -77,7 +77,7 @@ class UserResourceHandler @Inject()(
 
   private def returnFieldErrors(
               errors: Seq[(String, JsValueWrapper)]
-              ): Future[Left[IllegalFieldValuesException, Nothing]] =
-    Future.successful(Left(IllegalFieldValuesException(Json.obj(errors: _*))))
+              ): Future[IllegalFieldValuesException] =
+    Future.successful(IllegalFieldValuesException(Json.obj(errors: _*)))
 
 }
