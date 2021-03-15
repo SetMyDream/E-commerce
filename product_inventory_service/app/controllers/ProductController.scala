@@ -1,6 +1,7 @@
 package controllers
 
 import exceptions.StorageException.{IllegalFieldValuesException, UnknownDatabaseError}
+
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -8,12 +9,16 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
-/**
- * Takes HTTP requests and produces response futures.
- */
+/** Takes HTTP requests and produces response futures. */
 class ProductController @Inject()(cc: ProductControllerComponents)(
   implicit ec: ExecutionContext)
   extends ProductBaseController(cc) {
+
+  /** List all products w/o pagination   */
+  def listAll() : Action[AnyContent] = {
+
+  }
+
 
   def deleteProduct(id: Long): Action[AnyContent] = { implicit request =>
     productResourceHandler.delete(id).collect {

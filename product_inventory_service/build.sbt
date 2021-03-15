@@ -70,4 +70,3 @@ javacOptions ++= Seq(
   "-Xlint:unchecked",
   "-Xlint:deprecation"
 )
-

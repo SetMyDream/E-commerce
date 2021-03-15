@@ -9,8 +9,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 
-/**
- * Packages up the component dependencies for the post controller.
+/** Packages up the component dependencies for the post controller.
  *
  * This is a good way to minimize the surface area exposed to the controller, so the
  * controller only has to have one thing injected.
@@ -25,9 +24,7 @@ case class ProductControllerComponents @Inject()(
     executionContext: ExecutionContext)
     extends ControllerComponents
 
-/**
- * To make integrating some ProductController dependencies easier
- */
+/** To make integrating some ProductController dependencies easier */
 class ProductBaseController  @Inject()(ucc: ProductControllerComponents)
     extends BaseController {
 

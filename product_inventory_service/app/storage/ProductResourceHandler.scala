@@ -2,6 +2,7 @@ package storage
 
 import exceptions.StorageException
 import exceptions.StorageException.IllegalFieldValuesException
+
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.Json
 
@@ -9,9 +10,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
-/**
- * Controls access to the backend data, returning [[ProductResource]]
- */
+/** Controls access to the backend data, returning [[ProductResource]] */
 class ProductResourceHandler @Inject()(productRepository: ProductRepository)(
   implicit ec: ExecutionContext) {
 
@@ -19,8 +18,7 @@ class ProductResourceHandler @Inject()(productRepository: ProductRepository)(
     productRepository.get(id)
   }
 
-  /** need implement deletion
-   * */
+  /** Need implement deletion. As for now, it's supposed to be through marking in db 'deleted' field as true*/
   def delete(id: Long): Future[Option[ProductResource]] = {
     productRepository.delete(id)
   }
