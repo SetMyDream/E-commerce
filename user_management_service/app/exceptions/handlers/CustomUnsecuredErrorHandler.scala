@@ -6,10 +6,7 @@ import play.api.mvc.Results._
 
 import scala.concurrent.Future
 
-
-/**
- * Works with errors thrown by silhouette.UnsecuredAction
- */
+/** Works with errors thrown by silhouette.UnsecuredAction */
 class CustomUnsecuredErrorHandler extends UnsecuredErrorHandler {
 
   /**

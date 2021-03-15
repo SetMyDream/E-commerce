@@ -10,13 +10,11 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 
-
-/**
- * A custom identity service for the [[User]] model.
- */
-class UserService @Inject()(
+/** A custom identity service for the [[User]] model. */
+class UserService @Inject() (
       userRepository: UserRepository
-      )(implicit ec: ExecutionContext) extends IdentityService[User] {
+    )(implicit ec: ExecutionContext)
+      extends IdentityService[User] {
 
   /**
    * Retrieves a user that matches the specified login info.
@@ -26,9 +24,9 @@ class UserService @Inject()(
     Try(loginInfo.providerKey.toLong) match {
       case Failure(_) => Future.successful(None)
       case util.Success(userId) =>
-        userRepository.get(userId).map(userOption =>
-          userOption.map(user => User(userId, user.username))
-        )
+        userRepository
+          .get(userId)
+          .map(userOption => userOption.map(user => User(userId, user.username)))
     }
   }
 }

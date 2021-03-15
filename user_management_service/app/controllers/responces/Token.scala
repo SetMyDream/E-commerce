@@ -3,7 +3,6 @@ package controllers.responces
 import org.joda.time.DateTime
 import play.api.libs.json._
 
-
 /**
  * A response blueprint that serializes a session token data provided by
  * Silhouette to JSON.
@@ -18,7 +17,9 @@ import play.api.libs.json._
  * less obvious what our intentions are with this variable and what is
  * the format of the datetime data in it.
  */
-case class Token(token: String, expiresOn: DateTime)
+case class Token(
+      token: String,
+      expiresOn: DateTime)
 
 object Token {
   implicit val dateFormat = controllers.implicits.Json.dateFormat

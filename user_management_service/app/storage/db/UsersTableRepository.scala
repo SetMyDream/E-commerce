@@ -12,23 +12,19 @@ import slick.sql.SqlProfile.ColumnOption.NotNull
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @Singleton
-class UsersTableRepository @Inject()(
+class UsersTableRepository @Inject() (
       dbConfigProvider: DatabaseConfigProvider
-      )(implicit ec: ExecutionContext) extends UserRepository {
+    )(implicit ec: ExecutionContext)
+      extends UserRepository {
 
   protected val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
   import profile.api._
 
-
-  /**
-   * Slick representation of "users" table in the database
-   */
-  private[db] class UsersTable(tag: Tag) extends
-                    Table[UserResource](tag, "users") {
+  /** Slick representation of "users" table in the database */
+  private[db] class UsersTable(tag: Tag) extends Table[UserResource](tag, "users") {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def username = column[String]("username", NotNull)
@@ -39,20 +35,17 @@ class UsersTableRepository @Inject()(
     def idxUsername = index("idx_username", username, unique = true)
   }
 
-  /**
-   * The starting point for all queries on the USERS table.
-   */
+  /** The starting point for all queries on the USERS table. */
   val users = TableQuery[UsersTable]
 
   def create(username: String): Future[Either[StorageException, Long]] =
     db.run((users returning users.map(_.id)) += UserResource(None, username))
       .map(Right(_))
       .recoverWith {
-        case e: PSQLException if e.getMessage.startsWith(
-          "ERROR: duplicate key value violates unique constraint"
-        ) => Future(Left(UsernameAlreadyTaken()))
-        case e: PSQLException => Future(Left(UnknownDatabaseError(cause = Some(e))))
-        case e => Future.failed(e)
+        case e: PSQLException if isUniqueConstraintException(e) =>
+          Future(Left(UsernameAlreadyTaken()))
+        case e: PSQLException =>
+          Future(Left(UnknownDatabaseError(cause = Some(e))))
       }
 
   def get(username: String): Future[Option[UserResource]] = db.run {
@@ -62,5 +55,10 @@ class UsersTableRepository @Inject()(
   def get(id: Long): Future[Option[UserResource]] = db.run {
     users.filter(_.id === id).result.headOption
   }
+
+  private def isUniqueConstraintException(e: Throwable) =
+    e.getMessage.startsWith(
+      "ERROR: duplicate key value violates unique constraint"
+    )
 
 }
