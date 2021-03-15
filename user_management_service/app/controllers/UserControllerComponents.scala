@@ -1,7 +1,7 @@
 package controllers
 
 import storage.UserResourceHandler
-import auth.DefaultEnv
+import auth.{DefaultEnv, UserService}
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
@@ -21,6 +21,9 @@ import scala.concurrent.ExecutionContext
  */
 case class UserControllerComponents @Inject()(
     userResourceHandler: UserResourceHandler,
+    silhouette: Silhouette[DefaultEnv],
+    credentialsProvider: CredentialsProvider,
+    userService: UserService,
     actionBuilder: DefaultActionBuilder,
     parsers: PlayBodyParsers,
     fileMimeTypes: FileMimeTypes,
@@ -38,4 +41,7 @@ class UserBaseController @Inject()(ucc: UserControllerComponents)
   override protected def controllerComponents: ControllerComponents = ucc
 
   def userResourceHandler: UserResourceHandler = ucc.userResourceHandler
+  def silhouette: Silhouette[DefaultEnv] = ucc.silhouette
+  def credentialsProvider: CredentialsProvider = ucc.credentialsProvider
+  def userService: UserService = ucc.userService
 }

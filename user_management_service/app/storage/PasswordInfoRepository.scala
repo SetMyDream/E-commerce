@@ -19,7 +19,7 @@ class PasswordInfoRepository @Inject()(
       val tableRepository: SilhouetteTableRepository
       )(implicit ex: ExecutionContext)
       extends DelegableAuthInfoDAO[PasswordInfo]
-      with HasDatabaseConfigProvider[JdbcProfile] {
+        with HasDatabaseConfigProvider[JdbcProfile] {
   import profile.api._
   import tableRepository._
 
