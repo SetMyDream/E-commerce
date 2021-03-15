@@ -26,6 +26,8 @@ libraryDependencies ++= {
 
 resolvers += "Atlassian's Maven Public Repository" at "https://packages.atlassian.com/maven-public/"
 
+scalafmtConfig := baseDirectory.value / "conf" / "formatting.scalafmt.conf"
+
 scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
