@@ -1,1 +1,4 @@
 ->          /user                        routers.UserRouter
+
+# Swagger API
+GET         /swagger.json                controllers.ApiHelpController.getResources
