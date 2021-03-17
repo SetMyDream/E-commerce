@@ -3,6 +3,7 @@ package auth
 import auth.models.User
 import storage.PasswordInfoRepository
 import exceptions.handlers.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler}
+import controllers.responces.Token
 
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api._
@@ -60,7 +61,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
       idGenerator: IDGenerator,
       clock: Clock
     ): AuthenticatorService[BearerTokenAuthenticator] = {
-    val settings = BearerTokenAuthenticatorSettings()
+    val settings = BearerTokenAuthenticatorSettings(
+      fieldName = Token.httpHeaderName
+    )
     new BearerTokenAuthenticatorService(settings, repository, idGenerator, clock)
   }
 

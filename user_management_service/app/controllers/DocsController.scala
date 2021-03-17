@@ -1,11 +1,26 @@
 package controllers
 
-import io.swagger.annotations.{Api, ApiOperation}
+import controllers.responces.Token
+
+import io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation
+import io.swagger.annotations._
 import play.api.mvc._
 
 import javax.inject.Inject
 
 @Api(value = "Swagger docs")
+@SwaggerDefinition(
+  securityDefinition = new SecurityDefinition(
+    apiKeyAuthDefinitions = Array(
+      new ApiKeyAuthDefinition(
+        key = Token.docsKey,
+        in = ApiKeyLocation.HEADER,
+        name = Token.httpHeaderName,
+        description = Token.docsDescription
+      )
+    )
+  )
+)
 class DocsController @Inject() (components: ControllerComponents)
       extends AbstractController(components) {
 
