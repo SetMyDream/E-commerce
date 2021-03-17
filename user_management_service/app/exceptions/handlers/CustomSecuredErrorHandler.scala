@@ -9,11 +9,8 @@ import play.api.mvc._
 import javax.inject.Inject
 import scala.concurrent.Future
 
-
-/**
- * Works with errors thrown by silhouette.SecuredAction
- */
-class CustomSecuredErrorHandler @Inject()(val messagesApi: MessagesApi)
+/** Works with errors thrown by silhouette.SecuredAction */
+class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi)
       extends SecuredErrorHandler
         with I18nSupport
         with RequestExtractors
@@ -35,11 +32,13 @@ class CustomSecuredErrorHandler @Inject()(val messagesApi: MessagesApi)
   override def onNotAuthorized(implicit request: RequestHeader) =
     produceResponse(Forbidden, "Access denied")
 
-  protected def produceResponse[S <: Status](status: S, msg: String)(
-    implicit request: RequestHeader
-  ): Future[Result] =
-    Future.successful(render {
-      case Accepts.Json() => status(toJsonError(msg))
+  protected def produceResponse[S <: Status](
+      status: S,
+      msg: String
+    )(implicit request: RequestHeader
+    ): Future[Result] =
+    Future.successful(render { case Accepts.Json() =>
+      status(toJsonError(msg))
     })
 
   protected def toJsonError(message: String) =

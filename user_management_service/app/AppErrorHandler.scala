@@ -1,6 +1,5 @@
 import play.api.http.DefaultHttpErrorHandler
 
-
 /**
  * Fix exceptions being masked by Play's default error handler
  *

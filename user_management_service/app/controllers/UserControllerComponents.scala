@@ -12,31 +12,28 @@ import play.api.mvc._
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-
 /**
  * Packages up the component dependencies for the post controller.
  *
  * This is a good way to minimize the surface area exposed to the controller, so the
  * controller only has to have one thing injected.
  */
-case class UserControllerComponents @Inject()(
-    userResourceHandler: UserResourceHandler,
-    silhouette: Silhouette[DefaultEnv],
-    credentialsProvider: CredentialsProvider,
-    userService: UserService,
-    actionBuilder: DefaultActionBuilder,
-    parsers: PlayBodyParsers,
-    fileMimeTypes: FileMimeTypes,
-    langs: Langs,
-    messagesApi: MessagesApi,
-    executionContext: ExecutionContext)
-    extends ControllerComponents
+case class UserControllerComponents @Inject() (
+      userResourceHandler: UserResourceHandler,
+      silhouette: Silhouette[DefaultEnv],
+      credentialsProvider: CredentialsProvider,
+      userService: UserService,
+      actionBuilder: DefaultActionBuilder,
+      parsers: PlayBodyParsers,
+      fileMimeTypes: FileMimeTypes,
+      langs: Langs,
+      messagesApi: MessagesApi,
+      executionContext: ExecutionContext)
+      extends ControllerComponents
 
-/**
- * To make integrating some UserController dependencies easier
- */
-class UserBaseController @Inject()(ucc: UserControllerComponents)
-    extends BaseController {
+/** To make integrating some UserController dependencies easier */
+class UserBaseController @Inject() (ucc: UserControllerComponents)
+      extends BaseController {
 
   override protected def controllerComponents: ControllerComponents = ucc
 

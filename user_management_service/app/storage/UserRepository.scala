@@ -4,20 +4,13 @@ import exceptions.StorageException
 
 import scala.concurrent.Future
 
-
-/**
- * Provides access to the user data stored somewhere
- */
+/** Provides access to the user data stored somewhere */
 trait UserRepository {
 
-  /**
-   * Get a UserResource on a specific user by username
-   */
+  /** Get a UserResource on a specific user by username */
   def get(id: Long): Future[Option[UserResource]]
 
-  /**
-   * Get a UserResource on a specific user by the user's id
-   */
+  /** Get a UserResource on a specific user by the user's id */
   def get(username: String): Future[Option[UserResource]]
 
   /**

@@ -19,7 +19,6 @@ import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
 class SilhouetteModule extends AbstractModule with ScalaModule {
 
   override def configure(): Unit = {
@@ -31,10 +30,12 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Clock].toInstance(Clock())
     bind[EventBus].toInstance(EventBus())
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
-    bind[PasswordHasherRegistry].toInstance(PasswordHasherRegistry(
+    bind[PasswordHasherRegistry].toInstance(
+      PasswordHasherRegistry(
         current = new BCryptSha256PasswordHasher(),
         deprecated = Seq()
-    ))
+      )
+    )
 
     bind[IdentityService[User]].to[UserService]
     bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoRepository]
@@ -44,7 +45,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideEnvironment(
       userService: UserService,
       authenticatorService: AuthenticatorService[BearerTokenAuthenticator],
-      eventBus: EventBus): Environment[DefaultEnv] =
+      eventBus: EventBus
+    ): Environment[DefaultEnv] =
     Environment[DefaultEnv](
       userService,
       authenticatorService,
@@ -56,20 +58,23 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideAuthenticatorService(
       repository: AuthenticatorRepository[BearerTokenAuthenticator],
       idGenerator: IDGenerator,
-      clock: Clock): AuthenticatorService[BearerTokenAuthenticator] = {
+      clock: Clock
+    ): AuthenticatorService[BearerTokenAuthenticator] = {
     val settings = BearerTokenAuthenticatorSettings()
     new BearerTokenAuthenticatorService(settings, repository, idGenerator, clock)
   }
 
   @Provides
   def provideAuthenticatorRepository(
-      cacheLayer: CacheLayer): AuthenticatorRepository[BearerTokenAuthenticator] = {
+      cacheLayer: CacheLayer
+    ): AuthenticatorRepository[BearerTokenAuthenticator] = {
     new CacheAuthenticatorRepository(cacheLayer)
   }
 
   @Provides
   def provideAuthInfoRepository(
-      passwordInfoDao: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoRepository = {
+      passwordInfoDao: DelegableAuthInfoDAO[PasswordInfo]
+    ): AuthInfoRepository = {
     new DelegableAuthInfoRepository(passwordInfoDao)
   }
 }

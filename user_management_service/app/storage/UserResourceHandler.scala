@@ -14,15 +14,12 @@ import play.api.libs.json.Json
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-
-/**
- * Controls access to the backend data, returning [[UserResource]]
- */
-class UserResourceHandler @Inject()(
+/** Controls access to the backend data, returning [[UserResource]] */
+class UserResourceHandler @Inject() (
       val userRepository: UserRepository,
       authInfoRepository: AuthInfoRepository,
       passwordHasherRegistry: PasswordHasherRegistry
-      )(implicit ec: ExecutionContext) {
+    )(implicit ec: ExecutionContext) {
 
   def find(id: Long): Future[Option[UserResource]] = {
     userRepository.get(id)
@@ -42,7 +39,8 @@ class UserResourceHandler @Inject()(
 
   def register(
       _username: String,
-      _password: String): Future[Either[StorageException, (LoginInfo, Long)]] = {
+      _password: String
+    ): Future[Either[StorageException, (LoginInfo, Long)]] = {
     val username = _username.strip
     val password = _password.strip
 
@@ -52,22 +50,25 @@ class UserResourceHandler @Inject()(
     ).flatten match {
       case errors if errors.nonEmpty => returnFieldErrors(errors).map(Left(_))
       case _ =>
-        userRepository.create(username).map(userOrError =>
-          userOrError.map(userId => {
-            val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
-            val passInfo = passwordHasherRegistry.current.hash(password)
-            authInfoRepository.add(loginInfo, passInfo)
-            (loginInfo, userId)
-          }))
+        userRepository
+          .create(username)
+          .map(userOrError =>
+            userOrError.map(userId => {
+              val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
+              val passInfo = passwordHasherRegistry.current.hash(password)
+              authInfoRepository.add(loginInfo, passInfo)
+              (loginInfo, userId)
+            })
+          )
     }
   }
 
   private def checkForLength(
-    param: String,
-    param_name: String,
-    low: Int = 4,
-    high: Int = 20,
-  ): Option[(String, JsValueWrapper)] =
+      param: String,
+      param_name: String,
+      low: Int = 4,
+      high: Int = 20
+    ): Option[(String, JsValueWrapper)] =
     param match {
       case "" => Some(param_name -> s"$param_name can't be empty")
       case p if p.length > high => Some(param_name -> s"$param_name is too long")
@@ -76,8 +77,8 @@ class UserResourceHandler @Inject()(
     }
 
   private def returnFieldErrors(
-              errors: Seq[(String, JsValueWrapper)]
-              ): Future[IllegalFieldValuesException] =
+      errors: Seq[(String, JsValueWrapper)]
+    ): Future[IllegalFieldValuesException] =
     Future.successful(IllegalFieldValuesException(Json.obj(errors: _*)))
 
 }
