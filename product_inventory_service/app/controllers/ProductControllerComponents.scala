@@ -1,16 +1,15 @@
-package controller
+package controllers
 
 import play.api.http.FileMimeTypes
 import play.api.i18n.{Langs, MessagesApi}
 import play.api.mvc._
-import repository.ProductResourceHandler
+import storage.ProductResourceHandler
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 
-/**
- * Packages up the component dependencies for the post controller.
+/** Packages up the component dependencies for the post controller.
  *
  * This is a good way to minimize the surface area exposed to the controller, so the
  * controller only has to have one thing injected.
@@ -25,12 +24,11 @@ case class ProductControllerComponents @Inject()(
     executionContext: ExecutionContext)
     extends ControllerComponents
 
-/**
- * To make integrating some UserController dependencies easier
- */
-class ProductBaseController @Inject()(pcc: ProductControllerComponents)
+/** To make integrating some ProductController dependencies easier */
+class ProductBaseController  @Inject()(ucc: ProductControllerComponents)
     extends BaseController {
 
-  override protected def controllerComponents: ControllerComponents = pcc
+  override protected def controllerComponents: ControllerComponents = ucc
 
-  def productResourceHandler: ProductResourceHandler = pcc.productResourceHandler
+  def productResourceHandler: ProductResourceHandler = ucc.productResourceHandler
+}

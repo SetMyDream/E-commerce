@@ -1,19 +1,20 @@
-import com.google.inject.AbstractModule
-import net.codingwell.scalaguice.ScalaModule
+
+import storage.db.ProductsTableRepository
+import storage.ProductRepository
+
 import play.api.{Configuration, Environment}
-import repository.{ProductRepository, ProductTableRepository}
 
+import net.codingwell.scalaguice.ScalaModule
+import com.google.inject.AbstractModule
 
-/**
- * Guice module that tells Guice how to bind several
+/** Guice module that tells Guice how to bind several
  * different types. This module is created when the Play
- * application starts.
- */
-class Module (environment: Environment, configuration: Configuration)
+ * application starts. */
+class Module(environment: Environment, configuration: Configuration)
   extends AbstractModule
     with ScalaModule {
 
   override def configure = {
-    bind[ProductRepository].to[ProductTableRepository]
+    bind[ProductRepository].to[ProductsTableRepository]
   }
 }

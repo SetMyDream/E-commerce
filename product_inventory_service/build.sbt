@@ -3,7 +3,7 @@ name := """product_inventory"""
 version := "1.0-SNAPSHOT"
 val AkkaVersion = "2.5.31"
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, DockerPlugin)
+  .enablePlugins(PlayScala, DockerPlugin, PlayLayoutPlugin)
   .settings(
     name := """play-scala-slick-example""",
     version := "2.8.x",
@@ -17,6 +17,8 @@ lazy val root = (project in file("."))
       "com.lightbend.akka" %% "akka-stream-alpakka-slick" % "2.0.2",
       "net.codingwell" %% "scala-guice" % "4.2.6",
       "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+//      "org.scalatest" %% "scalatest" % "3.2.5" % "test",
+      "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
       specs2 % Test,
     ),
     scalacOptions ++= Seq(
@@ -68,4 +70,3 @@ javacOptions ++= Seq(
   "-Xlint:unchecked",
   "-Xlint:deprecation"
 )
-
