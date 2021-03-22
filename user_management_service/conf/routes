@@ -1,1 +1,10 @@
-->          /user                        routers.UserRouter
+GET         /user                        controllers.UserController.isAuthenticated
+GET         /user/:id                    controllers.UserController.getUser(id: Long)
+POST        /login                       controllers.UserController.login
+POST        /register                    controllers.UserController.register
+
+# Swagger API
+GET         /swagger.json                controllers.ApiHelpController.getResources
+GET         /api/docs                    controllers.DocsController.redirectDocs
+
+GET         /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)
