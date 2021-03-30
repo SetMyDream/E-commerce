@@ -27,9 +27,6 @@ class ProductController @Inject()(cc: ProductControllerComponents)(
     }
   }
 
-  def index() = {
-  }
-
   def getProduct(id: Long): Action[AnyContent] = Action.async { implicit request =>
     productResourceHandler.find(id).collect {
       case Some(productResource) => Ok(Json.toJson(productResource))
@@ -49,6 +46,12 @@ class ProductController @Inject()(cc: ProductControllerComponents)(
         }
       }
     } getOrElse Future(BadRequest("Bad request format"))
+  }
+
+  def redirectDocs: Action[AnyContent] = Action {
+    Redirect(
+      url = "/assets/lib/swagger-ui/index.html",
+      queryStringParams = Map("url" -> Seq("/swagger.json")))
   }
 
 }

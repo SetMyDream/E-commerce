@@ -20,12 +20,16 @@ lazy val root = (project in file("."))
 //      "org.scalatest" %% "scalatest" % "3.2.5" % "test",
       "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
       specs2 % Test,
+      "com.iterable" %% "swagger-play" % "2.0.1",
+      "org.webjars" % "swagger-ui" % "3.45.0",
+      "org.webjars" %% "webjars-play" % "2.8.0"
     ),
     scalacOptions ++= Seq(
       "-feature",
       "-deprecation",
       "-Xfatal-warnings"
-    )
+    ),
+    resolvers += Resolver.sonatypeRepo("releases")
   )
 
 scalacOptions ++= Seq(

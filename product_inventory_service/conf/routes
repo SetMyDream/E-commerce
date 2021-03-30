@@ -1,1 +1,4 @@
-->      /product                    router.ProductRouter
+->      /product                router.ProductRouter
+GET     /swagger.json           controllers.ApiHelpController.getResources
+GET     /docs                   controllers.HomeController.redirectDocs()
+GET     /assets/*file           controllers.Assets.at(path="/public", file)
