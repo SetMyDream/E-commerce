@@ -35,6 +35,20 @@ services:
     ports:
       - "8083:8080"
 
+
+product_inventory_db:
+  image: postgres:13-alpine
+  user: postgres
+  volumes:
+    - ./product_inventory_service/.postgres_data:/var/lib/postgresql/data
+  environment:
+    POSTGRES_DB: products
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+
+
+  ports:
+    - "9085:5432"
   reporting_service:
     build:
       context: .

@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk11:alpine AS scala_app
 
-ENV SBT_VER="1.4.7"
+ENV SBT_VER="1.4.9"
 ENV SBT_SHA256="c2a759fe40a3c21a16b5a88d00cd66f3af6f0721e4ea61b63942dfb83a2d54fd"
 
 ENV SCALA_VER="2.13.4"
@@ -74,7 +74,7 @@ FROM scala_app AS product_inventory_service
 COPY product_inventory_service/build.sbt .
 RUN sbt update
 
-COPY product_inventory_service/src ./src
+COPY product_inventory_service/app ./app
 COPY product_inventory_service/project ./project
 
 
