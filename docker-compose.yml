@@ -55,10 +55,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      JDBC_POSTGRES_URL: jdbc:postgresql://localhost:9085/users
+      JDBC_POSTGRES_URL: jdbc:postgresql://user_management_db:5432/users
     ports:
       - "8085:9000"
-  
+    depends_on:
+      - user_management_db
+
   user_management_db:
     image: postgres:13-alpine
     user: postgres
