@@ -6,8 +6,6 @@ services:
     build:
       context: .
       target: chat_service
-    volumes:
-      - ./chat_service/:/app/
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -17,8 +15,6 @@ services:
     build:
       context: .
       target: dispute_management_service
-    volumes:
-      - ./dispute_management_service/:/app/
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -28,8 +24,6 @@ services:
     build:
       context: .
       target: product_inventory_service
-    volumes:
-      - ./product_inventory_service/:/app/
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -39,8 +33,6 @@ services:
     build:
       context: .
       target: reporting_service
-    volumes:
-      - ./reporting_service/:/app/
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -51,7 +43,7 @@ services:
       context: .
       target: user_management_service
     volumes:
-      - ./user_management_service/:/app/
+      - ./user_management_service/target/web/public/:/app/target/web/public/
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
