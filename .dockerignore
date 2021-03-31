@@ -1,0 +1,13 @@
+**/.idea
+**/.bsp
+**/.idea_modules
+**/.vscode
+**/metals.sbt
+**/.metals
+**/.bloop
+
+*/.cache
+*/.git
+
+**/target
+*/.postgres_data

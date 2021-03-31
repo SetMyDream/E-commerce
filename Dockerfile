@@ -55,7 +55,7 @@ COPY chat_service/project ./project
 COPY chat_service/build.sbt .
 RUN sbt update
 
-COPY chat_service/src ./src
+COPY chat_service/* ./
 
 
 
@@ -65,7 +65,7 @@ COPY dispute_management_service/project ./project
 COPY dispute_management_service/build.sbt .
 RUN sbt update
 
-COPY dispute_management_service/src ./src
+COPY dispute_management_service/* ./
 
 
 
@@ -75,7 +75,7 @@ COPY product_inventory_service/project ./project
 COPY product_inventory_service/build.sbt .
 RUN sbt update
 
-COPY product_inventory_service/src ./src
+COPY product_inventory_service/* ./
 
 
 
@@ -85,7 +85,7 @@ COPY reporting_service/project ./project
 COPY reporting_service/build.sbt .
 RUN sbt update
 
-COPY reporting_service/src ./src
+COPY reporting_service/* ./
 
 
 
@@ -95,4 +95,4 @@ COPY ./user_management_service/project ./project
 COPY ./user_management_service/build.sbt .
 RUN sbt update
 
-COPY ./user_management_service/src ./src
+COPY ./user_management_service/* ./
