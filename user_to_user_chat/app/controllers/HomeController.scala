@@ -3,15 +3,6 @@ package controllers
 import java.net.URI
 import javax.inject._
 
-import akka.actor.ActorSystem
-import akka.event.Logging
-import akka.stream.Materializer
-import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Source}
-import play.api.Logger
-import play.api.mvc._
-
-import scala.concurrent.{ExecutionContext, Future}
-
 /**
  * A very simple chat client using websockets.
  */
@@ -24,6 +15,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, i
                                extends BaseController with RequestMarkerContext {
 
   private type WSMessage = String
+
+  private val logger = Logger(getClass)
+
+  private implicit val logging = Logging(actorSystem.eventStream, logger.underlyingLogger.getName)
 
   private val (chatSink, chatSource) = {
     // Don't log MergeHub$ProducerFailed as error if the client disconnects.
