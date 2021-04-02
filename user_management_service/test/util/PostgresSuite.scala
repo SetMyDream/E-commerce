@@ -41,7 +41,13 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
     Using(
       Database.forURL(dbUrlRoot, driver = driver, user = dbUser, password = dbPass)
     ) { postgres =>
-      Await.result(postgres.run(sqlu"CREATE DATABASE #$dbName"), actionTimeout)
+      Await.result(
+        postgres.run(
+          sqlu"""DROP DATABASE IF EXISTS #$dbName;
+                 CREATE DATABASE #$dbName"""
+        ),
+        actionTimeout
+      )
     }
   }
 
