@@ -52,6 +52,7 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   override def afterAll(): Unit = {
+    appDB.shutdown()
     Using(
       Database.forURL(dbUrlRoot, driver = driver, user = dbUser, password = dbPass)
     ) { postgres =>
@@ -63,7 +64,6 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
         actionTimeout
       )
     }
-    appDB.shutdown()
   }
 
   override def beforeEach(): Unit = {
