@@ -25,5 +25,5 @@ create table "password_info" (
 
 # --- !Downs
 
-drop table "login_info" if exists;
-drop table "password_info" if exists;
+drop table if exists "login_info" cascade;
+drop table if exists "password_info" cascade;

@@ -25,9 +25,9 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
   val dbUrl: String = "^.*/".r.findFirstIn(dbUrlRoot).get + dbName
 
   lazy val appDB: PlayDatabase = Databases(
-    url = dbUrlRoot,
+    url = dbUrl,
     driver = driver,
-    name = dbName,
+    name = "default",
     config = Map(
       "username" -> dbUser,
       "password" -> dbPass
