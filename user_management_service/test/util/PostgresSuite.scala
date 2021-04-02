@@ -49,7 +49,13 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
     Using(
       Database.forURL(dbUrlRoot, driver = driver, user = dbUser, password = dbPass)
     ) { postgres =>
-      Await.result(postgres.run(sqlu"DROP DATABASE #$dbName"), actionTimeout)
+      Await.result(
+        postgres.run(
+          sqlu"""SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#$dbName';
+                 DROP DATABASE #$dbName"""
+        ),
+        actionTimeout
+      )
     }
     appDB.shutdown()
   }
