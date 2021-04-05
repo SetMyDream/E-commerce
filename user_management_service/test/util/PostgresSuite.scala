@@ -49,29 +49,35 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
         actionTimeout
       )
     }
+    super.beforeAll()
   }
 
   override def afterAll(): Unit = {
-    appDB.shutdown()
-    Using(
-      Database.forURL(dbUrlRoot, driver = driver, user = dbUser, password = dbPass)
-    ) { postgres =>
-      Await.result(
-        postgres.run(
-          sqlu"""SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#$dbName';
+    try super.afterAll()
+    finally {
+      appDB.shutdown()
+      Using(
+        Database.forURL(dbUrlRoot, driver = driver, user = dbUser, password = dbPass)
+      ) { postgres =>
+        Await.result(
+          postgres.run(
+            sqlu"""SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#$dbName';
                  DROP DATABASE #$dbName"""
-        ),
-        actionTimeout
-      )
+          ),
+          actionTimeout
+        )
+      }
     }
   }
 
   override def beforeEach(): Unit = {
     Evolutions.applyEvolutions(appDB)
+    super.beforeEach()
   }
 
   override def afterEach(): Unit = {
-    Evolutions.cleanupEvolutions(appDB)
+    try super.afterEach()
+    finally Evolutions.cleanupEvolutions(appDB)
   }
 
 }
