@@ -11,7 +11,6 @@ libraryDependencies ++= {
   Seq(
     guice,
     ehcache,
-    jdbc % Test,
     "net.codingwell"         %% "scala-guice"                     % "4.2.6",
     "org.typelevel"          %% "cats-core"                       % "2.2.0",
     "net.logstash.logback"    % "logstash-logback-encoder"        % "6.2",
@@ -22,7 +21,7 @@ libraryDependencies ++= {
     "com.mohiva"             %% "play-silhouette"                 % silhouetteVersion,
     "com.mohiva"             %% "play-silhouette-password-bcrypt" % silhouetteVersion,
     "com.mohiva"             %% "play-silhouette-persistence"     % silhouetteVersion,
-    "org.scalatestplus.play" %% "scalatestplus-play"              % "5.0.0" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play"              % "5.0.0"           % Test,
     "org.webjars"             % "swagger-ui"                      % "3.45.0",
     // This is a fork from io.swagger version, which doesn't support Play 2.8 at the moment
     // Change to the official version when it gets upgraded

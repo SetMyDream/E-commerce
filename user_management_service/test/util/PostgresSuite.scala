@@ -1,20 +1,27 @@
 package util
 
 import org.scalatest._
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import com.typesafe.config.ConfigFactory
 import slick.jdbc.JdbcBackend.{Database, DatabaseDef}
 import slick.jdbc.PostgresProfile.api._
-import play.api.db.{Databases, Database => PlayDatabase}
-import play.api.db.evolutions._
 import slick.dbio.{Effect, NoStream}
 import slick.sql.SqlAction
+import play.api.db.{DBApi, Database => PlayDatabase}
+import play.api.db.evolutions._
+import play.api.inject.guice.GuiceApplicationBuilder
 
 import scala.util.Using
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
-  self: Suite =>
+trait PostgresSuite
+      extends GuiceOneAppPerSuite
+        with BeforeAndAfterAll
+        with BeforeAndAfterEach {
+  self: TestSuite =>
+  override val invokeBeforeAllAndAfterAllEvenIfNoTestsAreExpected = true
+
   private val dbName = getClass.getSimpleName.toLowerCase
   private val actionTimeout = 5.seconds
 
@@ -26,23 +33,29 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
   private val dbPass = defaultConf.getString("slick.dbs.default.db.password")
   val dbUrl: String = "^.*/".r.findFirstIn(dbUrlRoot).get + dbName
 
-  lazy val appDB: PlayDatabase = Databases(
-    url = dbUrl,
-    driver = driver,
-    name = "default",
-    config = Map(
-      "username" -> dbUser,
-      "password" -> dbPass
-    )
-  )
+  lazy val appDB: PlayDatabase = app.injector.instanceOf[DBApi].database("default")
 
-  def withDB(f: DatabaseDef => Unit): Unit =
+  override def fakeApplication() = {
+    // fakeApplication starts earlier than beforeAll, so that's the only
+    // place for this bit of code I can think of
+    updateRootDB(sqlu"""
+      DROP DATABASE IF EXISTS #$dbName;
+      CREATE DATABASE #$dbName""")
+
+    new GuiceApplicationBuilder()
+      .configure(
+        dbUrlConfigPath -> dbUrl
+      )
+      .build()
+  }
+
+  def withRootDB(f: DatabaseDef => Unit): Unit =
     Using(
-      Database.forURL(dbUrl, driver = driver, user = dbUser, password = dbPass)
+      Database.forURL(dbUrlRoot, driver = driver, user = dbUser, password = dbPass)
     )(f)
 
-  def updateDB(_sql: SqlAction[Any, NoStream, Effect]): Unit = {
-    withDB { postgres =>
+  def updateRootDB(_sql: SqlAction[Any, NoStream, Effect]): Unit = {
+    withRootDB { postgres =>
       Await.result(
         postgres.run(_sql),
         actionTimeout
@@ -50,18 +63,11 @@ trait PostgresSuite extends BeforeAndAfterAll with BeforeAndAfterEach {
     }
   }
 
-  override def beforeAll(): Unit = {
-    updateDB(sqlu"""
-      DROP DATABASE IF EXISTS #$dbName;
-      CREATE DATABASE #$dbName""")
-    super.beforeAll()
-  }
-
   override def afterAll(): Unit = {
     try super.afterAll()
     finally {
       appDB.shutdown()
-      updateDB(sqlu"""
+      updateRootDB(sqlu"""
         SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#$dbName';
         DROP DATABASE #$dbName""")
     }
