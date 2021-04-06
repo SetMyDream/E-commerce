@@ -35,13 +35,14 @@ trait PostgresSuite
 
   lazy val appDB: PlayDatabase = app.injector.instanceOf[DBApi].database("default")
 
-  override def fakeApplication() = {
-    // fakeApplication starts earlier than beforeAll, so that's the only
-    // place for this bit of code I can think of
+  protected def beforeAppSetup(): Unit = {
     updateRootDB(sqlu"""
       DROP DATABASE IF EXISTS #$dbName;
       CREATE DATABASE #$dbName""")
+  }
 
+  override def fakeApplication() = {
+    beforeAppSetup()
     new GuiceApplicationBuilder()
       .configure(
         dbUrlConfigPath -> dbUrl
