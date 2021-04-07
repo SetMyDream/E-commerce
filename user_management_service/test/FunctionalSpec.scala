@@ -4,15 +4,15 @@ import controllers.validators.CredentialsValidator
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.EitherValues._
 import org.scalatestplus.play._
+import play.api.mvc.AnyContentAsText
 
 class FunctionalSpec
       extends PlaySpec
         with PostgresSuite
         with UserFixtures
-        with SimpleFakeRequest
-        with ScalaFutures {
+        with SimpleFakeRequest {
 
   "UserController" should {
     "return user info by user id" in withDummyUser { user =>
@@ -46,5 +46,43 @@ class FunctionalSpec
         status(resp) mustBe UNAUTHORIZED
         contentAsString(resp) mustBe "User is not authenticated"
     }
+
+    "register a user with valid credentials" in {
+      val credentials = CredentialsValidator("user1", "12345678")
+      val resp = makeJsonRequest("/register", POST, Json.toJson(credentials))
+
+      status(resp) mustBe OK
+      val token = contentAsJson(resp).validate[Token].asEither.value
+      token.token must not be empty
+
+      getUserFromRepo(credentials) mustBe a[Some[_]]
+    }
+
+    "return 400 on an invalid /register request" in {
+      val resp1 = makeEmptyRequest(
+        "/register",
+        POST,
+        Seq(CONTENT_TYPE -> "application/json")
+      )
+      status(resp1) mustBe BAD_REQUEST
+
+      val resp2 = makeRequest(
+        "/register",
+        POST,
+        Seq(CONTENT_TYPE -> "application/json"),
+        AnyContentAsText("""{"username": "username", "invalidField": true}""")
+      )
+      status(resp2) mustBe BAD_REQUEST
+    }
+
+    "not register the user if a user with the same username already exists" in withDummyUser {
+      user =>
+        val credentials = CredentialsValidator(user.username, "12345678")
+        val resp = makeJsonRequest("/register", POST, Json.toJson(credentials))
+
+        status(resp) mustBe CONFLICT
+        getUserFromRepo(credentials).get mustBe user
+    }
+
   }
 }

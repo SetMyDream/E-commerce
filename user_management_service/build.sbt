@@ -21,7 +21,9 @@ libraryDependencies ++= {
     "com.mohiva"             %% "play-silhouette"                 % silhouetteVersion,
     "com.mohiva"             %% "play-silhouette-password-bcrypt" % silhouetteVersion,
     "com.mohiva"             %% "play-silhouette-persistence"     % silhouetteVersion,
-    "org.scalatestplus.play" %% "scalatestplus-play"              % "5.0.0"           % Test,
+    "org.scalatest"          %% "scalatest"                       % "3.2.7"   % Test,
+    "org.scalatestplus"      %% "scalacheck-1-15"                 % "3.2.7.0" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play"              % "5.1.0"   % Test,
     "org.webjars"             % "swagger-ui"                      % "3.45.0",
     // This is a fork from io.swagger version, which doesn't support Play 2.8 at the moment
     // Change to the official version when it gets upgraded

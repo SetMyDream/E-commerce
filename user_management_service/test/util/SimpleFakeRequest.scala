@@ -1,15 +1,20 @@
 package util
 
+import controllers.validators.CredentialsValidator
+import storage.{UserRepository, UserResource}
 import org.scalatest.TestSuite
+import org.scalatest.concurrent.ScalaFutures._
 import org.scalatestplus.play.BaseOneAppPerSuite
 import play.api.http.{HeaderNames, Writeable}
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.libs.json.JsValue
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsJson, Result}
 import play.api.test.{FakeHeaders, FakeRequest}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
 trait SimpleFakeRequest { self: TestSuite with BaseOneAppPerSuite =>
+  def userRepo = app.injector.instanceOf[UserRepository]
 
   def makeEmptyRequest(
       path: String,
@@ -17,6 +22,19 @@ trait SimpleFakeRequest { self: TestSuite with BaseOneAppPerSuite =>
       headers: Seq[(String, String)] = Seq.empty
     ): Future[Result] =
     makeRequest(path, method, headers)
+
+  def makeJsonRequest(
+      path: String,
+      method: String,
+      body: JsValue,
+      headers: Seq[(String, String)] = Seq.empty
+    ): Future[Result] =
+    makeRequest(
+      path = path,
+      method = method,
+      Seq(CONTENT_TYPE -> "application/json") ++ headers,
+      AnyContentAsJson(body)
+    )
 
   def makeRequest[A](
       path: String,
@@ -35,4 +53,13 @@ trait SimpleFakeRequest { self: TestSuite with BaseOneAppPerSuite =>
       )
     ).get
   }
+
+  def getJsStringField(
+      resp: Future[Result],
+      field: String
+    ): String =
+    (contentAsJson(resp) \ field).as[String]
+
+  def getUserFromRepo(credentials: CredentialsValidator): Option[UserResource] =
+    userRepo.get(credentials.username).futureValue
 }
