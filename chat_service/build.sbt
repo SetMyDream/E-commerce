@@ -2,11 +2,16 @@ name := "chat"
 
 scalaVersion := "2.13.4"
 
+lazy val akkaVersion = "2.5.25"
+
+fork in run := true
+run / connectInput := true
+
 libraryDependencies ++= {
-  val http4sVersion = "0.21.+"
   Seq(
-    "org.http4s" %% "http4s-dsl" % http4sVersion,
-    "org.http4s" %% "http4s-blaze-server" % http4sVersion,
-    "ch.qos.logback" % "logback-classic" % "1.2.3"
-  )
+    "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+    "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+    "org.scodec" %% "scodec-core" % "1.11.4",
+    "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+    "org.scalatest" %% "scalatest" % "3.0.8" % Test  )
 }
