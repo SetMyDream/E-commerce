@@ -8,20 +8,24 @@ import storage.db.UsersTableRepository
 import controllers.validators.CredentialsValidator
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.util.{PasswordHasherRegistry, PasswordInfo}
+import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.TestSuite
 import org.scalatest.concurrent.ScalaFutures._
 import play.api.test.FakeRequest
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 trait UserFixtures extends InjectedServices {
   self: TestSuite with GuiceOneAppPerSuite =>
+  val timeOut = 10.seconds
 
   def withDummyUser(testCode: UserResource => Any): Unit = {
     val username = "user1"
     app.injector.instanceOf[UsersTableRepository]
-      .create(username).map {
+      .create(username).futureValue match {
         case Right(id) => testCode(UserResource(Option(id), username))
         case Left(_) => fail("Failed to create a user for a fixture")
       }
@@ -39,8 +43,8 @@ trait UserFixtures extends InjectedServices {
         .current
         .hash(credentials.password)
 
-      inject[AuthInfoRepository].add(loginInfo, passInfo)
-        .map(_ => testCode(userIdentity, credentials, loginInfo)).futureValue
+      Await.result(inject[AuthInfoRepository].add(loginInfo, passInfo), timeOut)
+      testCode(userIdentity, credentials, loginInfo)
     }
   }
 
@@ -49,10 +53,10 @@ trait UserFixtures extends InjectedServices {
     ): Unit = {
     withRegisteredDummyUser { (user, _, loginInfo) =>
       implicit val req = FakeRequest()
-      for {
-        authenticator <- authService.create(loginInfo)
-        token <- authService.init(authenticator)
-      } yield testCode(user, token)
+
+      val authenticator = authService.create(loginInfo).futureValue
+      val token = authService.init(authenticator).futureValue
+      testCode(user, token)
     }
   }
 

@@ -8,6 +8,7 @@ import org.scalatest.EitherValues._
 import org.scalatest.concurrent.ScalaFutures._
 import org.scalatestplus.play._
 import play.api.mvc.AnyContentAsText
+import com.fasterxml.jackson.core.JsonParseException
 
 class FunctionalSpec
       extends PlaySpec
@@ -17,13 +18,14 @@ class FunctionalSpec
 
   "UserController" should {
     "return user info by user id" in withDummyUser { user =>
-      val resp = makeEmptyRequest(s"/user/${user.id}")
+      val resp = makeEmptyRequest(s"/user/${user.id.get}")
+      status(resp) mustBe OK
       contentAsJson(resp) mustBe Json.toJson(user)
     }
 
     "return 404 if there is no such user" in {
       val resp = makeEmptyRequest("/user/1")
-      status(resp) mustBe 404
+      status(resp) mustBe NOT_FOUND
     }
 
     "return user info by authentication token" in withAuthenticatedDummyUser {
@@ -45,7 +47,7 @@ class FunctionalSpec
           headers = Seq(Token.httpHeaderName -> invalidToken)
         )
         status(resp) mustBe UNAUTHORIZED
-        contentAsJson(resp).validate[Token].asEither mustBe a [Left[_, _]]
+        a [JsonParseException] should be thrownBy contentAsJson(resp).validate[Token].get
     }
 
     "register a user with valid credentials" in {
@@ -102,7 +104,7 @@ class FunctionalSpec
         val resp = makeJsonRequest("/login", POST, Json.toJson(invalidCredentials))
 
         status(resp) mustBe FORBIDDEN
-        contentAsJson(resp).validate[Token].asEither mustBe a [Left[_, _]]
+        a [JsonParseException] should be thrownBy contentAsJson(resp).validate[Token].get
     }
 
   }
