@@ -2,6 +2,7 @@ package util
 
 import controllers.validators.CredentialsValidator
 import storage.{UserRepository, UserResource}
+
 import org.scalatest.TestSuite
 import org.scalatest.concurrent.ScalaFutures._
 import org.scalatestplus.play.BaseOneAppPerSuite

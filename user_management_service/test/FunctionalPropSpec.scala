@@ -25,6 +25,7 @@ class FunctionalPropSpec
         ("123456789012345678901", "password is too long")
       )
     ) { (password: String, expectedResponseError: String) =>
+      info("—————-")
       Given(s"""password "$password"""")
       `return BAD_REQUEST and don't create the user when a field is invalid`(
         CredentialsValidator("user1", password),
@@ -43,6 +44,7 @@ class FunctionalPropSpec
         ("myusernameiswaytoolong", "username is too long")
       )
     ) { (username: String, expectedResponseError: String) =>
+      info("—————-")
       Given(s"""username "$username"""")
       `return BAD_REQUEST and don't create the user when a field is invalid`(
         CredentialsValidator(username, "12345678"),

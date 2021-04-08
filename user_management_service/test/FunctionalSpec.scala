@@ -5,6 +5,7 @@ import controllers.validators.CredentialsValidator
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import org.scalatest.EitherValues._
+import org.scalatest.concurrent.ScalaFutures._
 import org.scalatestplus.play._
 import play.api.mvc.AnyContentAsText
 
@@ -38,13 +39,13 @@ class FunctionalSpec
 
     "return 401 if invalid token is specified" in withAuthenticatedDummyUser {
       (_, token) =>
-        val invalidToken = token.init + (token.last + 1)
+        val invalidToken = makeInvalidCopy(token)
         val resp = makeEmptyRequest(
           path = "/user",
           headers = Seq(Token.httpHeaderName -> invalidToken)
         )
         status(resp) mustBe UNAUTHORIZED
-        contentAsString(resp) mustBe "User is not authenticated"
+        contentAsJson(resp).validate[Token].asEither mustBe a [Left[_, _]]
     }
 
     "register a user with valid credentials" in {
@@ -52,8 +53,8 @@ class FunctionalSpec
       val resp = makeJsonRequest("/register", POST, Json.toJson(credentials))
 
       status(resp) mustBe OK
-      val token = contentAsJson(resp).validate[Token].asEither.value
-      token.token must not be empty
+      val tokenObj = contentAsJson(resp).validate[Token].asEither.value
+      tokenObj.token must not be empty
 
       getUserFromRepo(credentials) mustBe a[Some[_]]
     }
@@ -84,5 +85,27 @@ class FunctionalSpec
         getUserFromRepo(credentials).get mustBe user
     }
 
+    "login a user with valid credentials" in withRegisteredDummyUser {
+      (_, credentials, loginInfo) =>
+        val resp = makeJsonRequest("/login", POST, Json.toJson(credentials))
+        status(resp) mustBe OK
+
+        val token = contentAsJson(resp).validate[Token].asEither.value.token
+        val userAuthenticator = authRepo.find(token).futureValue.value
+        userAuthenticator.loginInfo mustBe loginInfo
+    }
+
+    "not login a user with invalid credentials" in withRegisteredDummyUser {
+      (_, credentials, _) =>
+        val invalidCredentials =
+        credentials.copy(password = makeInvalidCopy(credentials.password))
+        val resp = makeJsonRequest("/login", POST, Json.toJson(invalidCredentials))
+
+        status(resp) mustBe FORBIDDEN
+        contentAsJson(resp).validate[Token].asEither mustBe a [Left[_, _]]
+    }
+
   }
+
+  private def makeInvalidCopy(str: String): String = str.init + (str.last + 1)
 }
