@@ -1,5 +1,3 @@
-package akkastreamchat
-
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -17,11 +15,11 @@ import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl.Source
 import akka.stream.scaladsl.Tcp
 import akka.util.ByteString
-import akkastreamchat.Protocol.ClientCommand
-import akkastreamchat.Protocol.ServerCommand
-import akkastreamchat.Protocol.ServerCommand.Alert
-import akkastreamchat.Protocol.ServerCommand.Disconnect
-import akkastreamchat.Protocol.ServerCommand.Welcome
+import Protocol.ClientCommand
+import Protocol.ServerCommand
+import Protocol.ServerCommand.Alert
+import Protocol.ServerCommand.Disconnect
+import Protocol.ServerCommand.Welcome
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Await
@@ -165,7 +163,7 @@ object Server {
           if (users.putIfAbsent(newUsername, connectionId) == null) {
             (
               new Running(connectionId, newUsername, users),
-              DirectResponse(Welcome(newUsername, "Welcome to Akka Streams Chat!"))
+              DirectResponse(Welcome(newUsername, "Welcome to User Chat!"))
             )
           } else {
             (this, DirectResponse(Disconnect(s"${newUsername.name} already taken")))

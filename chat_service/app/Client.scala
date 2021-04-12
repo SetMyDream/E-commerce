@@ -1,5 +1,3 @@
-package akkastreamchat
-
 import akka.Done
 import akka.actor.ActorSystem
 import akka.routing.SeveralRoutees
@@ -10,9 +8,9 @@ import akka.stream.scaladsl.Keep
 import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl.Source
 import akka.stream.scaladsl.Tcp
-import akkastreamchat.Protocol.ClientCommand
-import akkastreamchat.Protocol.ClientCommand.SendMessage
-import akkastreamchat.Protocol.ServerCommand
+import Protocol.ClientCommand
+import Protocol.ClientCommand.SendMessage
+import Protocol.ServerCommand
 
 import scala.concurrent.duration._
 import scala.concurrent.Await

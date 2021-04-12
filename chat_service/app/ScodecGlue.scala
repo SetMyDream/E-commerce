@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2009-2019 Lightbend Inc. <https://www.lightbend.com>
- */package akkastreamchat
-
-import akka.NotUsed
+ */import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import akka.stream.scaladsl.Framing
 import akka.util.ByteString

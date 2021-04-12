@@ -1,5 +1,3 @@
-package akkastreamchat
-
 import scodec.Codec
 import scodec.codecs._
 
