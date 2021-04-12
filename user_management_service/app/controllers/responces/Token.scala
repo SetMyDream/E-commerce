@@ -28,7 +28,7 @@ case class Token(
 
 object Token {
   implicit val dateFormat = controllers.implicits.Json.dateFormat
-  implicit val writesFormat = Json.writes[Token]
+  implicit val format = Json.format[Token]
   final val httpHeaderName = "X-Auth-Token"
 
   /** Used for defining [[io.swagger.annotations.Authorization]] */
