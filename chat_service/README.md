@@ -28,13 +28,16 @@
 ---
 
 Running the server:
-`sbt "runMain akkastreamchat.Server 127.0.0.1 2842"`
+
+sbt "runMain chat.Server [server] [port]"
+i.e.:
+`sbt "runMain Server 127.0.0.1 2844"`
 
 Running the client connecting to the server:
 
-`sbt "runMain akkastreamchat.Client 127.0.0.1 2842 tiger"`
-
-`sbt "runMain akkastreamchat.Client 127.0.0.1 2842 scott"`
+sbt "runMain chat.Client [server] [port] [username]"
+i.e.:
+`sbt "runMain Client 127.0.0.1 2844 Artem"`
 
 Client commands:
 
