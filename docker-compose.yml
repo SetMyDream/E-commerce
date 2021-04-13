@@ -6,6 +6,7 @@ services:
     build:
       context: .
       target: chat_service
+    container_name: ecomm-chat
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -15,6 +16,7 @@ services:
     build:
       context: .
       target: dispute_management_service
+    container_name: ecomm-dispute
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -24,6 +26,7 @@ services:
     build:
       context: .
       target: product_inventory_service
+    container_name: ecomm-product
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -33,6 +36,7 @@ services:
     build:
       context: .
       target: reporting_service
+    container_name: ecomm-report
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -42,6 +46,7 @@ services:
     build:
       context: .
       target: user_management_service
+    container_name: ecomm-user
     volumes:
       - ./user_management_service/target/web/public/:/app/target/web/public/
     environment:
@@ -55,6 +60,7 @@ services:
 
   user_management_db:
     image: postgres:13-alpine
+    container_name: ecomm-userdb
     user: postgres
     volumes:
       - ./user_management_service/.postgres_data:/var/lib/postgresql/data
