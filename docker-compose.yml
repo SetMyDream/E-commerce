@@ -11,7 +11,11 @@ services:
       VAULT_TOKEN: 'root-token'
       VAULT_ADDR: 'http://127.0.0.1:8200'
     volumes:
-      - ./vault/config:/vault/config
+      - ./vault:/vault
+      - dispute_management_credentials:/services/dispute_management
+      - product_inventory_credentials:/services/product_inventory
+      - user_management_credentials:/services/user_management
+    entrypoint: "/vault/entrypoint-dev.sh"
     ports:
       - "8200:8200"
 
@@ -83,3 +87,17 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "9085:5432"
+
+volumes:
+  dispute_management_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+  product_inventory_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+  user_management_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"

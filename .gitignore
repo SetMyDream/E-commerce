@@ -16,3 +16,6 @@
 .metals
 .bloop
 project/metals.sbt
+
+vault/file
+vault/logs
