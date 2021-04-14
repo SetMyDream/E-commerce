@@ -2,6 +2,19 @@ version: "3.8"
 
 services:
 
+  vault:
+    image: vault:1.7.0
+    container_name: ecomm-vault
+    cap_add: [IPC_LOCK]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: 'root-token'
+      VAULT_TOKEN: 'root-token'
+      VAULT_ADDR: 'http://127.0.0.1:8200'
+    volumes:
+      - ./vault/config:/vault/config
+    ports:
+      - "8200:8200"
+
   chat:
     build:
       context: .
