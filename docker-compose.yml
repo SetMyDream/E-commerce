@@ -3,19 +3,16 @@ version: "3.8"
 services:
 
   vault:
-    image: vault:1.7.0
+    build:
+      context: vault
+      target: vault-dev
     container_name: ecomm-vault
     cap_add: [IPC_LOCK]
-    environment:
-      VAULT_DEV_ROOT_TOKEN_ID: 'root-token'
-      VAULT_TOKEN: 'root-token'
-      VAULT_ADDR: 'http://127.0.0.1:8200'
     volumes:
       - ./vault:/vault
       - dispute_management_credentials:/services/dispute_management
       - product_inventory_credentials:/services/product_inventory
       - user_management_credentials:/services/user_management
-    entrypoint: "/vault/entrypoint-dev.sh"
     ports:
       - "8200:8200"
 
