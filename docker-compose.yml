@@ -34,20 +34,28 @@ services:
       context: .
       target: dispute_management_service
     container_name: ecomm-dispute
+    volumes:
+      - dispute_management_credentials:/vault
     environment:
       SERVICE_PORT: 8080
     ports:
       - "8082:8080"
+    depends_on:
+      - vault
 
   product_inventory:
     build:
       context: .
       target: product_inventory_service
     container_name: ecomm-product
+    volumes:
+      - product_inventory_credentials:/vault
     environment:
       SERVICE_PORT: 8080
     ports:
       - "8083:8080"
+    depends_on:
+      - vault
 
   reporting_service:
     build:
@@ -66,6 +74,7 @@ services:
     container_name: ecomm-user
     volumes:
       - ./user_management_service/target/web/public/:/app/target/web/public/
+      - user_management_credentials:/vault
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -74,6 +83,7 @@ services:
       - "8085:9000"
     depends_on:
       - user_management_db
+      - vault
 
   user_management_db:
     image: postgres:13-alpine
