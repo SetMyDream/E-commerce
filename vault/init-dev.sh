@@ -4,9 +4,13 @@ while sleep 0.1; do
   # wait until vault is unsealed
   if vault status > /dev/null; then
     vault auth enable approle
+    vault secrets enable totp # totp secrets at /totp/*
 
+    # Upload policy from file
+    vault policy write finance-service /vault/config/finance-service-policy.hcl
     # Create "finance" app role
     vault write auth/approle/role/finance \
+      token_policies=finance-service \
       secret_id_ttl=8h \
       token_num_uses=0 \
       token_ttl=0 \
