@@ -19,9 +19,8 @@ while sleep 0.2; do
     vault auth enable approle > /dev/null
     vault secrets enable totp > /dev/null
 
-    # Upload policy from file
+    # Create the "finance" app role
     vault policy write finance-service /vault/config/finance-service-policy.hcl
-    # Create "finance" app role
     vault write auth/approle/role/finance \
       token_policies=finance-service \
       secret_id_ttl=8h \
@@ -29,9 +28,6 @@ while sleep 0.2; do
       token_ttl=0 \
       token_max_ttl=0 \
       secret_id_num_uses=0
-    # Change role_id of "finance" app role to a custom value
-    vault write auth/approle/role/finance/role-id \
-      role_id=finance-role-id
 
     break
   fi
@@ -40,7 +36,7 @@ done
 # kill the vault server
 kill $!
 
-# save our initial data when vault is completely shut down
+# save the initial data when vault is completely shut down
 while sleep 0.1; do
   pgrep vault > /dev/null
   if [ $? -ne 0 ]; then
