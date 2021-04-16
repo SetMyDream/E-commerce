@@ -19,7 +19,7 @@ while sleep 0.2; do
     vault auth enable approle > /dev/null
     vault secrets enable totp > /dev/null
 
-    # Create the "finance" app role
+    # create the "finance" app role
     vault policy write finance-service /vault/config/finance-service-policy.hcl
     vault write auth/approle/role/finance \
       token_policies=finance-service \

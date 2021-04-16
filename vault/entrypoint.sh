@@ -2,10 +2,10 @@
 
 set -m
 
-# If there is no data, copy over the initial data
-ls /vault/data &> dev/null
-if [ $? -ne 0 ]; then
-  mv /opt/data-ini /vault/data
+# If there is no data, copy over the initial data and start new logs
+if [ "$(ls /vault/data | wc -c)" -eq 0 ]; then
+  mv /opt/data-ini/* /vault/data
+  rm -rf /vault/logs/*
 fi
 
 # Start Vault server
@@ -20,6 +20,9 @@ while sleep 0.1; do
     vault operator unseal "$(jq -r .unseal_keys_b64[2] < /vault/data/init.json)" > /dev/null
     # login the vault CLI
     jq -r .root_token < /vault/data/init.json | vault login -
+
+    # enable logging
+    vault audit enable file file_path=/vault/logs/audit.log 2> /dev/null
 
     # Generate secret_id for the services
     ROLE_ID=$(vault read --format=json auth/approle/role/finance/role-id | jq -r .data.role_id)

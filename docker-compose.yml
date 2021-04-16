@@ -9,7 +9,8 @@ services:
     container_name: ecomm-vault
     cap_add: [IPC_LOCK]
     volumes:
-      - ./vault:/vault
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
       - dispute_management_credentials:/services/dispute_management
       - product_inventory_credentials:/services/product_inventory
       - user_management_credentials:/services/user_management
