@@ -17,5 +17,5 @@
 .bloop
 project/metals.sbt
 
-vault/file
+vault/data
 vault/logs
