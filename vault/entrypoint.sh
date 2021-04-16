@@ -15,11 +15,11 @@ while sleep 0.1; do
   # wait until vault server is running
   vault status &> /dev/null
   if [ $? -ne 1 ]; then
-    vault operator unseal "$(jq -r .unseal_keys_b64[0] < /opt/credentials/init.json)" > /dev/null
-    vault operator unseal "$(jq -r .unseal_keys_b64[1] < /opt/credentials/init.json)" > /dev/null
-    vault operator unseal "$(jq -r .unseal_keys_b64[2] < /opt/credentials/init.json)" > /dev/null
+    vault operator unseal "$(jq -r .unseal_keys_b64[0] < /vault/data/init.json)" > /dev/null
+    vault operator unseal "$(jq -r .unseal_keys_b64[1] < /vault/data/init.json)" > /dev/null
+    vault operator unseal "$(jq -r .unseal_keys_b64[2] < /vault/data/init.json)" > /dev/null
     # login the vault CLI
-    jq -r .root_token < /opt/credentials/init.json | vault login -
+    jq -r .root_token < /vault/data/init.json | vault login -
 
     # Generate secret_id for the services
     vault write -format json auth/approle/role/finance/secret-id \

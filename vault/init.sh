@@ -8,13 +8,13 @@ while sleep 0.2; do
   vault status > /dev/null 2>&1
   if [ $? -ne 1 ]; then
     # start vault and unseal it
-    mkdir /opt/credentials
-    vault operator init -address=http://127.0.0.1:8200 --format=json > /opt/credentials/init.json
-    vault operator unseal "$(jq -r .unseal_keys_b64[0] < /opt/credentials/init.json)" > /dev/null
-    vault operator unseal "$(jq -r .unseal_keys_b64[1] < /opt/credentials/init.json)" > /dev/null
-    vault operator unseal "$(jq -r .unseal_keys_b64[2] < /opt/credentials/init.json)" > /dev/null
+    mkdir /opt/data-ini
+    vault operator init -address=http://127.0.0.1:8200 --format=json > /opt/data-ini/init.json
+    vault operator unseal "$(jq -r .unseal_keys_b64[0] < /opt/data-ini/init.json)" > /dev/null
+    vault operator unseal "$(jq -r .unseal_keys_b64[1] < /opt/data-ini/init.json)" > /dev/null
+    vault operator unseal "$(jq -r .unseal_keys_b64[2] < /opt/data-ini/init.json)" > /dev/null
     # login the vault CLI
-    jq -r .root_token < /opt/credentials/init.json | vault login - > /dev/null
+    jq -r .root_token < /opt/data-ini/init.json | vault login - > /dev/null
 
     vault auth enable approle > /dev/null
     vault secrets enable totp > /dev/null
@@ -44,7 +44,7 @@ kill $!
 while sleep 0.1; do
   pgrep vault > /dev/null
   if [ $? -ne 0 ]; then
-    mv /vault/data /opt/data-ini
+    mv /vault/data/* /opt/data-ini/
     break
   fi
 done
