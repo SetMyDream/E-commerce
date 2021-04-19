@@ -26,3 +26,24 @@
 - ***tapir*** — we can describe **HTTP API endpoints** as **immutable Scala values**. Each endpoint can contain a number of input parameters, error-output parameters, and normal-output parameters.
 
 ---
+
+Running the server:
+
+sbt "runMain chat.Server [server] [port]"
+i.e.:
+`sbt "runMain Server 127.0.0.1 2844"`
+
+Running the client connecting to the server:
+
+sbt "runMain chat.Client [server] [port] [username]"
+i.e.:
+`sbt "runMain Client 127.0.0.1 2844 Artem"`
+
+Client commands:
+
+`text` send to all connected users
+
+`/users` lists logged in users
+
+`/quit` disconnect and terminate client
+

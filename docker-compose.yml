@@ -2,10 +2,26 @@ version: "3.8"
 
 services:
 
+  vault:
+    build:
+      context: vault
+      target: vault-dev
+    container_name: ecomm-vault
+    cap_add: [IPC_LOCK]
+    volumes:
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
+      - dispute_management_credentials:/services/dispute_management
+      - product_inventory_credentials:/services/product_inventory
+      - user_management_credentials:/services/user_management
+    ports:
+      - "8200:8200"
+
   chat:
     build:
       context: .
       target: chat_service
+    container_name: ecomm-chat
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -15,24 +31,35 @@ services:
     build:
       context: .
       target: dispute_management_service
+    container_name: ecomm-dispute
+    volumes:
+      - dispute_management_credentials:/vault
     environment:
       SERVICE_PORT: 8080
     ports:
       - "8082:8080"
+    depends_on:
+      - vault
 
   product_inventory:
     build:
       context: .
       target: product_inventory_service
+    container_name: ecomm-product
+    volumes:
+      - product_inventory_credentials:/vault
     environment:
       SERVICE_PORT: 8080
     ports:
       - "8083:8080"
+    depends_on:
+      - vault
 
   reporting_service:
     build:
       context: .
       target: reporting_service
+    container_name: ecomm-report
     environment:
       SERVICE_PORT: 8080
     ports:
@@ -42,8 +69,10 @@ services:
     build:
       context: .
       target: user_management_service
+    container_name: ecomm-user
     volumes:
       - ./user_management_service/target/web/public/:/app/target/web/public/
+      - user_management_credentials:/vault
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -52,9 +81,11 @@ services:
       - "8085:9000"
     depends_on:
       - user_management_db
+      - vault
 
   user_management_db:
     image: postgres:13-alpine
+    container_name: ecomm-userdb
     user: postgres
     volumes:
       - ./user_management_service/.postgres_data:/var/lib/postgresql/data
@@ -64,3 +95,17 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "9085:5432"
+
+volumes:
+  dispute_management_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+  product_inventory_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+  user_management_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
