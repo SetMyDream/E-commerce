@@ -7,7 +7,7 @@ import akka.util.Timeout
 import play.api.libs.json.{JsValue, Json}
 
 import java.io.FileInputStream
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Using}
 
@@ -17,18 +17,17 @@ object VaultLogin {
       filePath: String,
       pollingFrequency: FiniteDuration = 100.milliseconds,
       pollingTimeout: FiniteDuration = 5.minutes
-    )(implicit ec: ExecutionContext
     ): Future[JsValue] = {
     implicit val timeout: Timeout = pollingTimeout
-    implicit val system = ActorSystem(
-      jsonFileFetcher,
-      "Credentials polling"
-    )
-    system ? { ref => CheduleFetch(filePath, ref, pollingFrequency, pollingTimeout) }
+    implicit val system = ActorSystem(jsonFileFetcher, "CredentialsPolling")
+
+    system ? { ref =>
+      ScheduleFetch(filePath, ref, pollingFrequency, pollingTimeout)
+    }
   }
 
   sealed trait FetcherCommand
-  case class CheduleFetch(
+  case class ScheduleFetch(
         path: String,
         replyTo: ActorRef[JsValue],
         pollingFrequency: FiniteDuration,
@@ -39,29 +38,31 @@ object VaultLogin {
         replyTo: ActorRef[JsValue])
         extends FetcherCommand
   case class Stop(path: String) extends FetcherCommand
+
   def jsonFileFetcher: Behavior[FetcherCommand] = Behaviors.setup { context =>
     Behaviors.withTimers[FetcherCommand] { timers =>
+      val log = context.log
       Behaviors.receiveMessagePartial {
-        case CheduleFetch(path, replyTo, pollingFrequency, pollingTimeout) =>
-          context.log.trace(s"Scheduling fetching for file $path")
+        case ScheduleFetch(path, replyTo, pollingFrequency, pollingTimeout) =>
+          log.debug(s"Scheduling fetching for file $path")
           timers.startTimerWithFixedDelay(
-            key = path,
+            key = "Poller " + path,
             FetchFile(path, replyTo),
             pollingFrequency
           )
-          timers.startSingleTimer(key = path, Stop(path), pollingTimeout)
+          timers.startSingleTimer(key = "Poller timeout " + path, Stop(path), pollingTimeout)
           Behaviors.same
         case FetchFile(path, replyTo) =>
-          context.log.trace(s"Fetching for file $path")
+          log.trace(s"Trying to read file $path")
           Using(new FileInputStream(path)) { file =>
-            context.log.trace(s"Successfully fetched file $path")
+            log.debug(s"Successfully fetched file $path")
             replyTo ! Json.parse(file)
           } match {
             case _: Success[_] => Behaviors.stopped
             case _: Failure[_] => Behaviors.same
           }
         case Stop(path) =>
-          context.log.error(s"Couldn't find the file $path")
+          log.error(s"Couldn't find the file $path")
           Behaviors.stopped
       }
     }
