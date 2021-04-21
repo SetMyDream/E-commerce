@@ -11,7 +11,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Using}
 
-object VaultLogin {
+object CredentialsFetcher {
 
   def getCredentials(
       filePath: String,
@@ -44,14 +44,16 @@ object VaultLogin {
       val log = context.log
       Behaviors.receiveMessagePartial {
         case ScheduleFetch(path, replyTo, pollingFrequency, pollingTimeout) =>
+          val fetchMessage = FetchFile(path, replyTo)
+          val stopMessage = Stop(path)
+
           log.debug(s"Scheduling fetching for file $path")
           timers.startTimerWithFixedDelay(
-            key = "Poller " + path,
-            FetchFile(path, replyTo),
-            pollingFrequency
-          )
-          timers.startSingleTimer(key = "Poller timeout " + path, Stop(path), pollingTimeout)
+            s"Poller $path", fetchMessage, pollingFrequency)
+          timers.startSingleTimer(
+            s"Poller timeout $path", stopMessage, pollingTimeout)
           Behaviors.same
+
         case FetchFile(path, replyTo) =>
           log.trace(s"Trying to read file $path")
           Using(new FileInputStream(path)) { file =>
@@ -61,6 +63,7 @@ object VaultLogin {
             case _: Success[_] => Behaviors.stopped
             case _: Failure[_] => Behaviors.same
           }
+
         case Stop(path) =>
           log.error(s"Couldn't find the file $path")
           Behaviors.stopped

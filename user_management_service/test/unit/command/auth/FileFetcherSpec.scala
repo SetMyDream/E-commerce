@@ -1,6 +1,6 @@
 package unit.command.auth
 
-import command.auth.VaultLogin._
+import command.auth.CredentialsFetcher._
 import command.model.AppRoleCredentials
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
