@@ -1,4 +1,4 @@
-import command.VaultConnection
+import commands.vault.VaultConnection
 import storage.UserRepository
 import storage.db.UsersTableRepository
 

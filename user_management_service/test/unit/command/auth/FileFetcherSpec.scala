@@ -1,7 +1,7 @@
 package unit.command.auth
 
-import command.auth.CredentialsFetcher._
-import command.model.AppRoleCredentials
+import commands.vault.auth.CredentialsFetcher._
+import commands.vault.model.AppRoleCredentials
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import play.api.libs.json.{JsValue, Json}

@@ -1,7 +1,7 @@
 package unit.command
 
-import command.VaultCommands
-import command.model.AppRoleCredentials
+import commands.vault.VaultCommands
+import commands.vault.model.AppRoleCredentials
 
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.concurrent.ScalaFutures._
@@ -44,8 +44,8 @@ class VaultCommandsSpec extends AnyFlatSpec with Matchers {
     } { implicit port =>
       WsTestClient.withClient { client =>
         val config = Configuration("vault.api.path" -> "")
-        val commandsAPI = new VaultCommands(client, config)
-        val responseTimeout = Timeout(Span(500, Millis))
+        val commandsAPI = new VaultCommands(client, config, null)
+        val responseTimeout = Timeout(Span(1000, Millis))
         commandsAPI
           .login(AppRoleCredentials("", "", "", 1))
           .futureValue(responseTimeout) shouldBe "5b1a0318-679c-9c45-e5c6-d1b9a9035"

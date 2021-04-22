@@ -1,4 +1,4 @@
-package command.auth
+package commands.vault.auth
 
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.actor.typed.scaladsl.Behaviors

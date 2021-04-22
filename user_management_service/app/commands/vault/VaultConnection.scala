@@ -1,7 +1,7 @@
-package command
+package commands.vault
 
-import command.auth.CredentialsFetcher
-import command.model.AppRoleCredentials
+import commands.vault.auth.CredentialsFetcher
+import commands.vault.model.AppRoleCredentials
 
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi

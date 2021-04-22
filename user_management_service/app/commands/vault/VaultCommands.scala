@@ -1,6 +1,6 @@
-package command
+package commands.vault
 
-import command.model.AppRoleCredentials
+import commands.vault.model.AppRoleCredentials
 
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi

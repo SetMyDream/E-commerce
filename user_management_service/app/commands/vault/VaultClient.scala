@@ -1,4 +1,4 @@
-package command
+package commands.vault
 
 import scala.concurrent.ExecutionContext
 

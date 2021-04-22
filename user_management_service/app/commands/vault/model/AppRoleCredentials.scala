@@ -1,4 +1,4 @@
-package command.model
+package commands.vault.model
 
 import play.api.libs.json.Json
 
