@@ -78,6 +78,7 @@ services:
       POSTGRES_PASSWORD: postgres
       JDBC_POSTGRES_URL: jdbc:postgresql://user_management_db:5432/users
       VAULT_API_PATH: http://vault:8200
+      VAULT_INIT_CREDENTIALS_PATH: /vault/credentials.json
     ports:
       - "8085:9000"
     depends_on:

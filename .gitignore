@@ -12,6 +12,7 @@
 .classpath
 .settings
 .postgres_data
+.dependencies
 .DS_Store
 .metals
 .bloop
