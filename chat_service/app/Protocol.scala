@@ -12,6 +12,7 @@ object Protocol {
 
   object ClientCommand {
     case class RequestUsername(name: Username) extends ClientCommand
+    case class PrivateMessage(value: String) extends ClientCommand
     case class SendMessage(value: String) extends ClientCommand
 
     private val codec: Codec[ClientCommand] = discriminated[ClientCommand]
