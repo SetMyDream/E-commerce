@@ -109,5 +109,4 @@ class FunctionalSpec
 
   }
 
-  private def makeInvalidCopy(str: String): String = str.init + (str.last + 1)
 }

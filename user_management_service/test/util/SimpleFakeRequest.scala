@@ -63,4 +63,6 @@ trait SimpleFakeRequest { self: TestSuite with BaseOneAppPerSuite =>
 
   def getUserFromRepo(credentials: CredentialsValidator): Option[UserResource] =
     userRepo.get(credentials.username).futureValue
+
+  def makeInvalidCopy(str: String): String = str.init + (str.last + 1)
 }
