@@ -1,4 +1,4 @@
-package unit.command.auth
+package unit.commands.vault.auth
 
 import org.scalatest.TestSuite
 

@@ -1,4 +1,4 @@
-package unit.command
+package unit.commands.vault
 
 import commands.vault.VaultCommands
 import commands.vault.model.AppRoleCredentials
