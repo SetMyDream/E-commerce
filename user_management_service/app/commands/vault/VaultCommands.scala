@@ -48,8 +48,8 @@ class VaultCommands @Inject() (
     )(implicit ec: ExecutionContext
     ): Future[String] = {
     val loginPayload = Json.obj(
-      "role_id" -> credentials.roleId,
-      "secret_id" -> credentials.secretId
+      "role_id" -> credentials.role_id,
+      "secret_id" -> credentials.secret_id
     )
     val resp = ws.url(s"$API_PATH/auth/approle/login").post(loginPayload)
     resp.map(_.json \ "auth" \ "client_token").map(_.as[String])
