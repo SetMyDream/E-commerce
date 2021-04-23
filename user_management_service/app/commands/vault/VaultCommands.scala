@@ -26,7 +26,9 @@ class VaultCommands @Inject() (
       case None => throw new IllegalStateException("Token wasn't found in cache")
     }
 
-  def generateTOTPKey(
+  def keyName(keyPostfix: String) = TOTP_KEY_PREFIX + keyPostfix
+
+  protected[vault] def generateTOTPKey(
       authToken: String
     )(keyPostfix: String,
       accountName: String
@@ -37,11 +39,39 @@ class VaultCommands @Inject() (
       "issuer" -> ISSUER,
       "account_name" -> accountName
     )
-    val keyName = TOTP_KEY_PREFIX + keyPostfix
-    ws.url(s"$API_PATH/v1/totp/keys/$keyName")
-      .withHttpHeaders(AUTH_TOKEN_HTTP_HEADER -> authToken)
+    authenticatedRequest(authToken)("/totp/keys/" + keyName(keyPostfix))
       .post(payload)
   }
+
+  protected[vault] def validateTOTPCode(
+      authToken: String
+    )(keyPostfix: String,
+      code: String
+    )(implicit
+      ec: ExecutionContext
+    ): Future[Boolean] = {
+    val payload = Json.obj("code" -> code)
+    for {
+      res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
+        .post(payload)
+      valid = (res.json \ "data" \ "valid").as[Boolean]
+    } yield valid
+  }
+
+  protected[vault] def generateTOTPCode(
+      authToken: String
+    )(keyPostfix: String
+    )(implicit
+      ec: ExecutionContext
+    ): Future[String] =
+    for {
+      res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
+        .get()
+      valid = (res.json \ "data" \ "code").as[String]
+    } yield valid
+
+  protected[vault] def authenticatedRequest(authToken: String)(uri: String) =
+    ws.url(API_PATH + uri).withHttpHeaders(AUTH_TOKEN_HTTP_HEADER -> authToken)
 
   def login(
       credentials: AppRoleCredentials
