@@ -28,4 +28,6 @@ class WalletTableRepository @Inject() (
     )(_.id, onDelete = ForeignKeyAction.Cascade)
   }
 
+  val wallets = TableQuery[WalletTable]
+
 }

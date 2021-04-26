@@ -2,7 +2,7 @@ package exceptions
 
 import play.api.libs.json.JsObject
 
-sealed trait AppException
+sealed trait AppException extends Throwable
 
 sealed trait StorageException extends AppException
 object StorageException {

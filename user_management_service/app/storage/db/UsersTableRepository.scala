@@ -42,11 +42,11 @@ class UsersTableRepository @Inject() (
   def create(username: String): Future[Either[StorageException, Long]] =
     db.run((users returning users.map(_.id)) += UserResource(None, username))
       .map(Right(_))
-      .recoverWith {
+      .recover {
         case e: PSQLException if isUniqueConstraintException(e) =>
-          Future(Left(UsernameAlreadyTaken()))
+          Left(UsernameAlreadyTaken())
         case e: PSQLException =>
-          Future(Left(UnknownDatabaseError(cause = Some(e))))
+          Left(UnknownDatabaseError(cause = Some(e)))
       }
 
   def get(username: String): Future[Option[UserResource]] = db.run {
