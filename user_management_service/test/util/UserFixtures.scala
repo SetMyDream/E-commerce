@@ -2,10 +2,10 @@ package util
 
 import auth.DefaultEnv
 import auth.models.User
-import storage.UserResource
 import storage.db.UsersTableRepository
-
+import storage.model.UserResource
 import controllers.validators.CredentialsValidator
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry

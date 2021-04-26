@@ -2,7 +2,8 @@ package storage.db
 
 import exceptions.StorageException
 import exceptions.StorageException.{UnknownDatabaseError, UsernameAlreadyTaken}
-import storage.{UserRepository, UserResource}
+import storage.UserRepository
+import storage.model.UserResource
 
 import org.postgresql.util.PSQLException
 import play.api.db.slick.DatabaseConfigProvider

@@ -2,6 +2,7 @@ package storage
 
 import exceptions.StorageException
 import exceptions.StorageException.IllegalFieldValuesException
+import storage.model.UserResource
 
 import cats.data.OptionT
 import com.mohiva.play.silhouette.api.LoginInfo

@@ -1,10 +1,12 @@
 package dummies
 
-import storage.{UserRepository, UserResource}
+import storage.UserRepository
+import storage.model.UserResource
 import exceptions.StorageException
+import exceptions.StorageException.UsernameAlreadyTaken
+
 import akka.actor.ActorSystem
 import play.api.libs.concurrent.CustomExecutionContext
-import exceptions.StorageException.UsernameAlreadyTaken
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future

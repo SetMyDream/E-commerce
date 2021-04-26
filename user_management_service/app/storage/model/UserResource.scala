@@ -1,4 +1,4 @@
-package storage
+package storage.model
 
 import io.swagger.annotations.{ApiModel, ApiModelProperty}
 import play.api.libs.json._

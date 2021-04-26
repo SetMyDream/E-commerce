@@ -1,6 +1,7 @@
 package storage
 
 import exceptions.StorageException
+import storage.model.UserResource
 
 import scala.concurrent.Future
 

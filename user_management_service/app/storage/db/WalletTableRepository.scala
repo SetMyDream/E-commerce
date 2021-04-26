@@ -1,5 +1,7 @@
 package storage.db
 
+import storage.model.WalletResource
+
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
@@ -12,14 +14,12 @@ class WalletTableRepository @Inject() (
   import dbConfig._
   import profile.api._
 
-  case class Wallet(
-        userId: Long,
-        balance: BigDecimal)
-  class WalletTable(tag: Tag) extends Table[Wallet](tag, "wallets") {
+  class WalletTable(tag: Tag) extends Table[WalletResource](tag, "wallets") {
     def userId = column[Long]("user_id", O.PrimaryKey)
     def balance = column[BigDecimal]("balance")
 
-    def * = (userId, balance) <> ((Wallet.apply _).tupled, Wallet.unapply)
+    def * =
+      (userId, balance) <> ((WalletResource.apply _).tupled, WalletResource.unapply)
 
     def userFk = foreignKey(
       "user_fk",
