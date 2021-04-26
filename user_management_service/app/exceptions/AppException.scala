@@ -17,3 +17,8 @@ object StorageException {
         cause: Option[Throwable])
         extends StorageException
 }
+
+sealed trait VaultException extends AppException
+object VaultException {
+  final case class UnknownVaultException(cause: Throwable) extends AppException
+}

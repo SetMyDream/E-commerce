@@ -27,8 +27,9 @@ class WalletRepository @Inject() (
     db.run(wallets += walletResource)
       .transform(
         _ => walletResource,
-        PartialFunction.fromFunction {
+        {
           case e: PSQLException => UnknownDatabaseError(cause = Some(e))
+          case e => e
         }
       )
 

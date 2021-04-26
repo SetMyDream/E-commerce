@@ -1,7 +1,7 @@
 package commands.vault
 
 import commands.vault.model.AppRoleCredentials
-
+import exceptions.VaultException.UnknownVaultException
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json.Json
@@ -21,10 +21,13 @@ class VaultCommands @Inject() (
   val ISSUER = "ECOMM-user-management"
 
   def client(implicit ec: ExecutionContext): Future[VaultClient] =
-    cache.get[String](VaultConnection.TOKEN_CACHE_KEY).map {
-      case Some(token) => new VaultClient(this, token)
-      case None => throw new IllegalStateException("Token wasn't found in cache")
-    }
+    cache
+      .get[String](VaultConnection.TOKEN_CACHE_KEY)
+      .map {
+        case Some(token) => new VaultClient(this, token)
+        case None => throw new IllegalStateException("Token wasn't found in cache")
+      }
+      .transform(identity, e => UnknownVaultException(e))
 
   def keyName(keyPostfix: String) = TOTP_KEY_PREFIX + keyPostfix
 
@@ -32,6 +35,7 @@ class VaultCommands @Inject() (
       authToken: String
     )(keyPostfix: String,
       accountName: String
+    )(implicit ec: ExecutionContext
     ): Future[WSResponse] = {
     val payload = Json.obj(
       "generate" -> true,
@@ -41,6 +45,7 @@ class VaultCommands @Inject() (
     )
     authenticatedRequest(authToken)("/totp/keys/" + keyName(keyPostfix))
       .post(payload)
+      .transform(identity, e => UnknownVaultException(e))
   }
 
   protected[vault] def validateTOTPCode(
