@@ -1,3 +1,4 @@
+import commands.vault.VaultConnection
 import storage.UserRepository
 import storage.db.UsersTableRepository
 
@@ -18,5 +19,6 @@ class Module(
 
   override def configure(): Unit = {
     bind[UserRepository].to[UsersTableRepository]
+    bind[VaultConnection].asEagerSingleton()
   }
 }

@@ -5,13 +5,11 @@ import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
 
 @Singleton
 class SilhouetteTableRepository @Inject() (
       dbConfigProvider: DatabaseConfigProvider,
-      val usersTableRepository: UsersTableRepository
-    )(implicit ec: ExecutionContext) {
+      val usersTableRepository: UsersTableRepository) {
   protected val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
