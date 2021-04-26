@@ -45,5 +45,8 @@ Client commands:
 
 `/users` lists logged in users
 
+`/w [username] *msg*` sends private message *msg* to user *username*
+
 `/quit` disconnect and terminate client
+
 

@@ -164,6 +164,7 @@ object Server {
             (
               new Running(connectionId, newUsername, users),
               DirectResponse(Welcome(newUsername, "Welcome to User Chat!"))
+
             )
           } else {
             (this, DirectResponse(Disconnect(s"${newUsername.name} already taken")))
@@ -185,12 +186,17 @@ object Server {
           DirectResponse(Alert(users.keys().asScala.map(_.name).mkString(", ")))
         case ClientCommand.SendMessage(msg) if msg.startsWith("/") =>
           DirectResponse(Alert("Unknown command"))
-        case ClientCommand.SendMessage(cmd) if cmd.startsWith("/w") =>
+        case ClientCommand.SendMessage(cmd) if cmd.startsWith("@") =>
           {
-            val user = cmd.substring(cmd.indexOf('['), cmd.indexOf(']'))
-            val msg = cmd.substring(cmd.indexOf(']')+1))
+            val user = cmd.substring(cmd.indexOf(''), cmd.indexOf(']'))
+            val msg = cmd.substring(cmd.findFirst(' ')+1))
             Whisper(Protocol.ServerCommand.Message(user, msg)
           }
+        case ClientCommand.SendMessage(cmd) if cmd.startsWith("/chatTo") =>
+        {
+          val userList = cmd.split(' ').skip(1)
+          CreateChat(userList)
+        }
         case ClientCommand.SendMessage(msg) =>
           Broadcast(Protocol.ServerCommand.Message(username, msg))
       }

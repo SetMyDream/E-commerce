@@ -25,7 +25,7 @@ object Protocol {
   }
 
 
-  /** Base trait for messages sent from the server to the client. */
+  /** Base trait for messages sent from the server to   `the client. */
   sealed trait ServerCommand
   object ServerCommand {
     case class Welcome(name: Username, banner: String) extends ServerCommand

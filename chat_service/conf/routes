@@ -1,0 +1,2 @@
+GET     /                           controllers.Application.index
+GET     /socket                     controllers.Application.socket
