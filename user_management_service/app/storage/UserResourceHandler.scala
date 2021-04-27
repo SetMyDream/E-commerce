@@ -1,7 +1,8 @@
 package storage
 
-import exceptions.StorageException._
+import commands.vault.VaultCommands
 import storage.model.UserResource
+import exceptions.StorageException._
 
 import cats.data.OptionT
 import com.mohiva.play.silhouette.api.LoginInfo
@@ -18,7 +19,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class UserResourceHandler @Inject() (
       val userRepository: UserRepository,
       authInfoRepository: AuthInfoRepository,
-      passwordHasherRegistry: PasswordHasherRegistry
+      passwordHasherRegistry: PasswordHasherRegistry,
+      vaultCommands: VaultCommands
     )(implicit ec: ExecutionContext) {
 
   def find(id: Long): Future[Option[UserResource]] = {
@@ -49,6 +51,7 @@ class UserResourceHandler @Inject() (
               val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
               val passInfo = passwordHasherRegistry.current.hash(password)
               authInfoRepository.add(loginInfo, passInfo)
+              vaultCommands.client.map(_.generateTOTPKey(userId.toString, username))
               (loginInfo, userId)
             })
           )
