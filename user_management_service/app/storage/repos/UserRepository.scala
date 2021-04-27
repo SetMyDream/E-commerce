@@ -1,4 +1,4 @@
-package storage
+package storage.repos
 
 import exceptions.StorageException._
 import storage.model.UserResource

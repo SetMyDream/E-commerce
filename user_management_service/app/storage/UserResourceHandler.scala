@@ -2,6 +2,7 @@ package storage
 
 import commands.vault.VaultCommands
 import storage.model.UserResource
+import storage.repos.UserRepository
 import exceptions.StorageException._
 
 import cats.data.OptionT

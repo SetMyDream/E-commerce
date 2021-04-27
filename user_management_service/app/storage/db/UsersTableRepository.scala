@@ -2,7 +2,7 @@ package storage.db
 
 import exceptions.StorageException._
 import exceptions.StorageException.UsersStorageException._
-import storage.UserRepository
+import storage.repos.UserRepository
 import storage.model.UserResource
 
 import org.postgresql.util.PSQLException

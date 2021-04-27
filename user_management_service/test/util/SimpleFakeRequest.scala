@@ -2,7 +2,7 @@ package util
 
 import controllers.validators.CredentialsValidator
 import storage.model.UserResource
-import storage.UserRepository
+import storage.repos.UserRepository
 
 import org.scalatest.TestSuite
 import org.scalatest.concurrent.ScalaFutures._

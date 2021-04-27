@@ -1,4 +1,4 @@
-package storage
+package storage.repos
 
 import exceptions.StorageException._
 import exceptions.StorageException.WalletStorageException._
@@ -6,8 +6,8 @@ import storage.db.WalletTableRepository
 import storage.model.WalletResource
 
 import org.postgresql.util.PSQLException
-import slick.jdbc.JdbcProfile
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import slick.jdbc.JdbcProfile
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

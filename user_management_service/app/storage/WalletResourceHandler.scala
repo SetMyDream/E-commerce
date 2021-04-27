@@ -2,6 +2,7 @@ package storage
 
 import commands.vault.VaultCommands
 import storage.model.WalletResource
+import storage.repos.WalletRepository
 import exceptions.VaultException.TransactionalVaultException._
 
 import akka.Done

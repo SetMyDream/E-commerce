@@ -1,6 +1,6 @@
 package dummies
 
-import storage.UserRepository
+import storage.repos.UserRepository
 import storage.model.UserResource
 import exceptions.StorageException._
 import UsersStorageException._

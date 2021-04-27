@@ -1,4 +1,4 @@
-package storage
+package storage.repos
 
 import storage.db.SilhouetteTableRepository
 

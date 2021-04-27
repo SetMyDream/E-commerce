@@ -1,7 +1,7 @@
 package auth
 
 import auth.models.User
-import storage.UserRepository
+import storage.repos.UserRepository
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
