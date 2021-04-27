@@ -60,9 +60,8 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .post(payload)
-      _ = if (res.status != 200) throw VaultErrorResponseException(res.json)
-      valid = (res.json \ "data" \ "valid").as[Boolean]
-    } yield valid
+      isValid = (res.json \ "data" \ "valid").as[Boolean]
+    } yield isValid
   }
 
   protected[vault] def generateTOTPCode(
@@ -75,8 +74,8 @@ class VaultCommands @Inject() (
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .get()
       _ = if (res.status != 200) throw VaultErrorResponseException(res.json)
-      valid = (res.json \ "data" \ "code").as[String]
-    } yield valid
+      code = (res.json \ "data" \ "code").as[String]
+    } yield code
 
   protected[vault] def authenticatedRequest(authToken: String)(uri: String) =
     ws.url(API_PATH + uri).withHttpHeaders(AUTH_TOKEN_HTTP_HEADER -> authToken)

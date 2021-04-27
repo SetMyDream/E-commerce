@@ -31,6 +31,15 @@ object StorageException {
 
 sealed trait VaultException extends AppException
 object VaultException {
-  final case class UnknownVaultException(cause: Throwable) extends VaultException
-  final case class VaultErrorResponseException(cause: JsValue) extends VaultException
+  sealed trait TransactionalVaultException extends VaultException
+  object TransactionalVaultException {
+    case object InvalidTOTP extends TransactionalVaultException
+  }
+
+  final case class UnknownVaultException(cause: Throwable)
+        extends VaultException
+          with TransactionalVaultException
+  final case class VaultErrorResponseException(cause: JsValue)
+        extends VaultException
+          with TransactionalVaultException
 }

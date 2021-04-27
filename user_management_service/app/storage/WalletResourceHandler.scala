@@ -2,6 +2,7 @@ package storage
 
 import commands.vault.VaultCommands
 import storage.model.WalletResource
+import exceptions.VaultException.TransactionalVaultException._
 
 import akka.Done
 import cats.data.OptionT
@@ -44,11 +45,13 @@ class WalletResourceHandler @Inject() (
       to: Long,
       amount: BigDecimal
     )(implicit ec: ExecutionContext
-    ) =
+    ): Future[Done] =
     for {
       vaultClient <- vaultCommands.client
       codeIsValid <- vaultClient.validateTOTPCode(from.toString, totpCode)
-      _ <- walletRepository.transfer(from, to, amount) if codeIsValid
+      _ <- if (!codeIsValid) Future.failed(InvalidTOTP)
+           else Future.successful()
+      _ <- walletRepository.transfer(from, to, amount)
     } yield Done
 
 }
