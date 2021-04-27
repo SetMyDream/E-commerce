@@ -1,7 +1,8 @@
 package commands.vault
 
 import commands.vault.model.AppRoleCredentials
-import exceptions.VaultException.UnknownVaultException
+import exceptions.VaultException.{UnknownVaultException, VaultErrorResponceException}
+
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json.Json
@@ -59,6 +60,7 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .post(payload)
+      _ = if (res.status != 200) throw VaultErrorResponceException(res.json)
       valid = (res.json \ "data" \ "valid").as[Boolean]
     } yield valid
   }
@@ -72,6 +74,7 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .get()
+      _ = if (res.status != 200) throw VaultErrorResponceException(res.json)
       valid = (res.json \ "data" \ "code").as[String]
     } yield valid
 
@@ -87,7 +90,10 @@ class VaultCommands @Inject() (
       "secret_id" -> credentials.secret_id
     )
     val resp = ws.url(s"$API_PATH/auth/approle/login").post(loginPayload)
-    resp.map(_.json \ "auth" \ "client_token").map(_.as[String])
+    resp.map{response =>
+      if (response.status != 200) throw VaultErrorResponceException(response.json)
+      response.json \ "auth" \ "client_token"
+    }.map(_.as[String])
   }
 
 }

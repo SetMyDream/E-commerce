@@ -1,6 +1,6 @@
 package exceptions
 
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, JsValue}
 
 sealed trait AppException extends Throwable
 
@@ -20,5 +20,6 @@ object StorageException {
 
 sealed trait VaultException extends AppException
 object VaultException {
-  final case class UnknownVaultException(cause: Throwable) extends AppException
+  final case class UnknownVaultException(cause: Throwable) extends VaultException
+  final case class VaultErrorResponceException(cause: JsValue) extends VaultException
 }
