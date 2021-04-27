@@ -211,21 +211,4 @@ class UserController @Inject() (
       result
     }
 
-  @Deprecated
-  def createUser(): Action[AnyContent] = Action.async { implicit request =>
-    request.body.asJson.flatMap { json =>
-      (json \ "username").toOption
-    } map { username =>
-      userResourceHandler.create(username.toString).collect {
-        case Right(id) => Ok(Json.obj("user_id" -> id))
-        case Left(e) =>
-          e match {
-            case e: UsernameAlreadyTaken => Conflict(e.msg)
-            case e: IllegalFieldValuesException => BadRequest(e.errors)
-            case e: UnknownDatabaseError => throw e.cause.get
-          }
-      }
-    } getOrElse Future.successful(BadRequest("Bad request format"))
-  }
-
 }

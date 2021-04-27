@@ -29,14 +29,6 @@ class UserResourceHandler @Inject() (
     OptionT(userRepository.get(username))
   }
 
-  def create(_username: String): Future[Either[UserStorageException, Long]] = {
-    val username = _username.strip
-    checkForLength(username, "username") match {
-      case Some(err) => returnFieldErrors(Seq(err)).map(Left(_))
-      case _ => userRepository.create(username)
-    }
-  }
-
   def register(
       _username: String,
       _password: String
