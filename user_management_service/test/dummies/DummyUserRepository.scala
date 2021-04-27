@@ -36,7 +36,7 @@ class DummyUserRepository @Inject() ()(implicit ec: RepositoryExecutionContext)
 
   override def create(username: String): Future[Either[UserStorageException, Long]] =
     get(username).map {
-      case Some(user) => Left(UsernameAlreadyTaken())
+      case Some(_) => Left(UsernameAlreadyTaken)
       case None =>
         val key = repo.keys.max + 1L
         repo.update(key, UserResource(Some(key), username))

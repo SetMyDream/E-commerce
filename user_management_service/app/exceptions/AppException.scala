@@ -8,17 +8,14 @@ sealed trait StorageException extends AppException
 object StorageException {
   sealed trait UserStorageException extends StorageException
   object UsersStorageException {
-    final case class UsernameAlreadyTaken(
-          msg: String = "A user with this username already exists")
-          extends UserStorageException
+    final case object UsernameAlreadyTaken extends UserStorageException
   }
 
   sealed trait WalletStorageException extends StorageException
   object WalletStorageException {
-    final case class InsufficientBalance(
-          msg: String = "Insufficient balance for the requested transaction")
-          extends WalletStorageException
+    final case object InsufficientBalance extends WalletStorageException
   }
+
   final case class IllegalFieldValuesException(
         errors: JsObject)
         extends StorageException

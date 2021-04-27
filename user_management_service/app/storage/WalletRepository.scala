@@ -50,7 +50,7 @@ class WalletRepository @Inject() (
       case e: PSQLException
           if e.getMessage
             .contains("violates check constraint \"balance_nonnegative\"") =>
-        InsufficientBalance()
+        InsufficientBalance
       case e: PSQLException => UnknownDatabaseError(cause = Some(e))
       case e => e
     }

@@ -44,7 +44,7 @@ class UsersTableRepository @Inject() (
       .map(Right(_))
       .recover {
         case e: PSQLException if isUniqueConstraintException(e) =>
-          Left(UsernameAlreadyTaken())
+          Left(UsernameAlreadyTaken)
         case e: PSQLException =>
           Left(UnknownDatabaseError(cause = Some(e)))
       }
