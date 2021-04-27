@@ -8,12 +8,16 @@ sealed trait StorageException extends AppException
 object StorageException {
   sealed trait UserStorageException extends StorageException
   object UsersStorageException {
-    final case object UsernameAlreadyTaken extends UserStorageException
+    final case object UsernameAlreadyTaken extends UserStorageException {
+      val msg = "A user with this username already exists"
+    }
   }
 
   sealed trait WalletStorageException extends StorageException
   object WalletStorageException {
-    final case object InsufficientBalance extends WalletStorageException
+    final case object InsufficientBalance extends WalletStorageException {
+      val msg = "Insufficient balance for the requested transaction"
+    }
   }
 
   final case class IllegalFieldValuesException(
@@ -33,7 +37,9 @@ sealed trait VaultException extends AppException
 object VaultException {
   sealed trait TransactionalVaultException extends VaultException
   object TransactionalVaultException {
-    case object InvalidTOTP extends TransactionalVaultException
+    case object InvalidTOTP extends TransactionalVaultException {
+      val msg = "The provided TOTP code is invalid"
+    }
   }
 
   final case class UnknownVaultException(cause: Throwable)

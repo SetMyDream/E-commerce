@@ -1,6 +1,7 @@
 package controllers
 
 import auth.models.User
+import controllers.components.{BaseUserController, UserControllerComponents}
 import controllers.responces.Token
 import controllers.validators.CredentialsValidator
 import exceptions.StorageException._
@@ -23,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UserController @Inject() (
       cc: UserControllerComponents
     )(implicit ec: ExecutionContext)
-      extends UserBaseController(cc) {
+      extends BaseUserController(cc) {
 
   @ApiOperation(
     value = "Get a user using their ID",
@@ -118,12 +119,12 @@ class UserController @Inject() (
               )
             case Left(e) =>
               e match {
-                case e: UsernameAlreadyTaken =>
-                  Future.successful(Conflict(e.msg))
-                case e: IllegalFieldValuesException =>
-                  Future.successful(BadRequest(e.errors))
-                case e: UnknownDatabaseError =>
-                  throw e.cause.get
+                case UsernameAlreadyTaken =>
+                  Future.successful(Conflict(UsernameAlreadyTaken.msg))
+                case IllegalFieldValuesException(errors) =>
+                  Future.successful(BadRequest(errors))
+                case UnknownDatabaseError(_, Some(cause)) =>
+                  throw cause
               }
           }
         }
