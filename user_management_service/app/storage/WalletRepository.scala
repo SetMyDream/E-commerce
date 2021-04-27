@@ -1,6 +1,7 @@
 package storage
 
-import exceptions.StorageException.UnknownDatabaseError
+import exceptions.StorageException._
+import exceptions.StorageException.WalletStorageException._
 import storage.db.WalletTableRepository
 import storage.model.WalletResource
 
@@ -43,7 +44,17 @@ class WalletRepository @Inject() (
       _ <- topUpAction(to, amount)
     } yield ()
     action.transactionally
-  }
+  }.transform(
+    identity,
+    {
+      case e: PSQLException
+          if e.getMessage
+            .contains("violates check constraint \"balance_nonnegative\"") =>
+        InsufficientBalance()
+      case e: PSQLException => UnknownDatabaseError(cause = Some(e))
+      case e => e
+    }
+  )
 
   protected[storage] def topUpAction(
       userId: BigDecimal,
