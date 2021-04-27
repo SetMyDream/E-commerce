@@ -7,7 +7,10 @@ create table "wallets" (
     constraint "user_fk"
         foreign key ("user_id")
         REFERENCES "users" ("id")
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+
+    constraint "balance_nonnegative"
+        check ("balance" >= 0)
 );
 
 # --- !Downs
