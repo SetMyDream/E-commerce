@@ -1,7 +1,7 @@
 package storage.db
 
-import exceptions.StorageException
-import exceptions.StorageException.{UnknownDatabaseError, UsernameAlreadyTaken}
+import exceptions.StorageException._
+import exceptions.StorageException.UsersStorageException._
 import storage.UserRepository
 import storage.model.UserResource
 
@@ -39,7 +39,7 @@ class UsersTableRepository @Inject() (
   /** The starting point for all queries on the USERS table. */
   val users = TableQuery[UsersTable]
 
-  def create(username: String): Future[Either[StorageException, Long]] =
+  def create(username: String): Future[Either[UserStorageException, Long]] =
     db.run((users returning users.map(_.id)) += UserResource(None, username))
       .map(Right(_))
       .recover {

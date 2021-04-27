@@ -1,7 +1,6 @@
 package storage
 
-import exceptions.StorageException
-import exceptions.StorageException.IllegalFieldValuesException
+import exceptions.StorageException._
 import storage.model.UserResource
 
 import cats.data.OptionT
@@ -30,7 +29,7 @@ class UserResourceHandler @Inject() (
     OptionT(userRepository.get(username))
   }
 
-  def create(_username: String): Future[Either[StorageException, Long]] = {
+  def create(_username: String): Future[Either[UserStorageException, Long]] = {
     val username = _username.strip
     checkForLength(username, "username") match {
       case Some(err) => returnFieldErrors(Seq(err)).map(Left(_))
@@ -41,7 +40,7 @@ class UserResourceHandler @Inject() (
   def register(
       _username: String,
       _password: String
-    ): Future[Either[StorageException, (LoginInfo, Long)]] = {
+    ): Future[Either[UserStorageException, (LoginInfo, Long)]] = {
     val username = _username.strip
     val password = _password.strip
 

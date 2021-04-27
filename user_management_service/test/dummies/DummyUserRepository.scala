@@ -2,8 +2,8 @@ package dummies
 
 import storage.UserRepository
 import storage.model.UserResource
-import exceptions.StorageException
-import exceptions.StorageException.UsernameAlreadyTaken
+import exceptions.StorageException._
+import UsersStorageException._
 
 import akka.actor.ActorSystem
 import play.api.libs.concurrent.CustomExecutionContext
@@ -34,7 +34,7 @@ class DummyUserRepository @Inject() ()(implicit ec: RepositoryExecutionContext)
       repo.find(_._2.username == username).map(_._2)
     }
 
-  override def create(username: String): Future[Either[StorageException, Long]] =
+  override def create(username: String): Future[Either[UserStorageException, Long]] =
     get(username).map {
       case Some(user) => Left(UsernameAlreadyTaken())
       case None =>

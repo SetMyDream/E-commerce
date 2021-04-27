@@ -6,16 +6,30 @@ sealed trait AppException extends Throwable
 
 sealed trait StorageException extends AppException
 object StorageException {
-  final case class UsernameAlreadyTaken(
-        msg: String = "A user with this username already exists")
-        extends StorageException
+  sealed trait UserStorageException extends StorageException
+  object UsersStorageException {
+    final case class UsernameAlreadyTaken(
+          msg: String = "A user with this username already exists")
+          extends UserStorageException
+  }
+
+  sealed trait WalletStorageException extends StorageException
+  object WalletStorageException {
+    final case class InsufficientBalance(
+          msg: String = "Insufficient balance for the requested transaction")
+          extends WalletStorageException
+  }
   final case class IllegalFieldValuesException(
         errors: JsObject)
         extends StorageException
+          with UserStorageException
+          with WalletStorageException
   final case class UnknownDatabaseError(
         msg: String = "An unknown db error! View the cause exception",
         cause: Option[Throwable])
         extends StorageException
+          with UserStorageException
+          with WalletStorageException
 }
 
 sealed trait VaultException extends AppException

@@ -4,6 +4,7 @@ import auth.models.User
 import controllers.responces.Token
 import controllers.validators.CredentialsValidator
 import exceptions.StorageException._
+import exceptions.StorageException.UsersStorageException._
 import storage.model.UserResource
 
 import com.mohiva.play.silhouette.api.{Authorization => _, _}
