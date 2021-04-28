@@ -60,6 +60,7 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .post(payload)
+      _ <- validateVaultResponse(res)
       isValid = (res.json \ "data" \ "valid").as[Boolean]
     } yield isValid
   }
@@ -73,7 +74,7 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .get()
-      _ = if (res.status != 200) throw VaultErrorResponseException(res.json)
+      _ <- validateVaultResponse(res)
       code = (res.json \ "data" \ "code").as[String]
     } yield code
 
@@ -88,11 +89,15 @@ class VaultCommands @Inject() (
       "role_id" -> credentials.role_id,
       "secret_id" -> credentials.secret_id
     )
-    val resp = ws.url(s"$API_PATH/auth/approle/login").post(loginPayload)
-    resp.map{response =>
-      if (response.status != 200) throw VaultErrorResponseException(response.json)
-      response.json \ "auth" \ "client_token"
-    }.map(_.as[String])
+    for {
+      res <- ws.url(s"$API_PATH/auth/approle/login").post(loginPayload)
+      _ <- validateVaultResponse(res)
+      token = res.json \ "auth" \ "client_token"
+    } yield token.as[String]
   }
+
+  private def validateVaultResponse(resp: WSResponse): Future[WSResponse] =
+    if (resp.status != 200) Future.failed(VaultErrorResponseException(resp.json))
+    else Future.successful(resp)
 
 }

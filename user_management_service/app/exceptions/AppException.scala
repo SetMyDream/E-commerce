@@ -45,7 +45,9 @@ object VaultException {
     }
   }
 
-  final case class UnknownVaultException(cause: Throwable)
+  final case class UnknownVaultException(
+        cause: Throwable,
+        msg: String = "An unknown Vault error! View the cause exception")
         extends VaultException
           with TransactionalVaultException
   final case class VaultErrorResponseException(cause: JsValue)

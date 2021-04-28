@@ -3,11 +3,14 @@ package storage
 import commands.vault.VaultCommands
 import storage.model.WalletResource
 import storage.repos.WalletRepository
+import exceptions.StorageException._
+import exceptions.VaultException._
 import exceptions.VaultException.TransactionalVaultException._
 
 import akka.Done
 import cats.data.OptionT
 import play.api.Logger
+import play.api.libs.json.Json
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,13 +49,25 @@ class WalletResourceHandler @Inject() (
       to: Long,
       amount: BigDecimal
     )(implicit ec: ExecutionContext
-    ): Future[Done] =
-    for {
-      vaultClient <- vaultCommands.client
-      codeIsValid <- vaultClient.validateTOTPCode(from.toString, totpCode)
-      _ <- if (!codeIsValid) Future.failed(InvalidTOTP)
-           else Future.successful()
-      _ <- walletRepository.transfer(from, to, amount)
-    } yield Done
+    ): Future[Done] = {
+    if (amount > 0)
+      for {
+        vaultClient <- vaultCommands.client
+        codeIsValid <- vaultClient.validateTOTPCode(from.toString, totpCode)
+        _ <- if (!codeIsValid) Future.failed(InvalidTOTP)
+             else Future.successful()
+        _ <- walletRepository.transfer(from, to, amount)
+      } yield Done
+    else
+      Future.failed(
+        IllegalFieldValuesException(
+          Json.obj("amount" -> "amount is not positive")
+        )
+      )
+  }.recoverWith {
+    case e: VaultErrorResponseException =>
+      logger.error("Vault sent an unexpected error response", e)
+      Future.failed(UnknownVaultException(e))
+  }
 
 }
