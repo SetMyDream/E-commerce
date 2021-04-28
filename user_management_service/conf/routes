@@ -2,6 +2,7 @@ GET         /user                        controllers.UserController.isAuthentica
 GET         /user/:id                    controllers.UserController.getUser(id: Long)
 POST        /login                       controllers.UserController.login
 POST        /register                    controllers.UserController.register
+POST        /transfer                    controllers.FinancialController.transfer
 
 # Swagger API
 GET         /swagger.json                controllers.ApiHelpController.getResources
