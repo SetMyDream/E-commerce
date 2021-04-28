@@ -1,2 +1,2 @@
 GET     /                           controllers.Application.index
-GET     /socket                     controllers.Application.socket
+GET     /chat                       controllers.Application.socket

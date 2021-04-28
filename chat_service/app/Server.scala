@@ -38,7 +38,7 @@ object Server {
   private final case class Whisper(command: ClientCommand) extends Response
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem("server")
+    implicit val system = ActorSystem("mainRoom")
     implicit val materializer = ActorMaterializer()
     import system.dispatcher
 
