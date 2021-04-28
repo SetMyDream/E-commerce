@@ -18,6 +18,9 @@ object StorageException {
     final case object InsufficientBalance extends WalletStorageException {
       val msg = "Insufficient balance for the requested transaction"
     }
+    final case object TransactionWithNonexistentUser extends WalletStorageException {
+      val msg = "Tried to execute a transfer engaging a user that doesn't exist"
+    }
   }
 
   final case class IllegalFieldValuesException(
