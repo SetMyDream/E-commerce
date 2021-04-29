@@ -46,6 +46,7 @@ object VaultException {
   sealed trait TransactionalVaultException extends VaultException
   object TransactionalVaultException {
     case object InvalidTOTP extends TransactionalVaultException
+    case object UnknownTOTPKey extends TransactionalVaultException
   }
 
   final case class UnknownVaultException(

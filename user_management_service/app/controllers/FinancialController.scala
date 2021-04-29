@@ -27,6 +27,7 @@ class FinancialController @Inject() (
         walletResourceHandler.transfer(totp, from, to, amount).map(_ => Ok).recover {
           case InvalidTOTP => Unauthorized
           case InsufficientBalance => PaymentRequired
+          case TransactionWithNonexistentUser => BadRequest
           case IllegalFieldValuesException(err) => BadRequest(err)
           case UnknownVaultException(cause, msg) =>
             logger.error(msg, cause)

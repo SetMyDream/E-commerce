@@ -1,11 +1,12 @@
 package commands.vault
 
 import commands.vault.model.AppRoleCredentials
-import exceptions.VaultException.{UnknownVaultException, VaultErrorResponseException}
+import exceptions.VaultException._
+import exceptions.VaultException.TransactionalVaultException._
 
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -60,7 +61,14 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .post(payload)
-      _ <- validateVaultResponse(res)
+      _ <- validateVaultResponse(res).recoverWith {
+        case e @ VaultErrorResponseException(resp) =>
+          (resp \ "errors").get match {
+            case JsArray(value) if value.head.as[String].startsWith("unknown key") =>
+              Future.failed(UnknownTOTPKey)
+            case _ => Future.failed(e)
+          }
+      }
       isValid = (res.json \ "data" \ "valid").as[Boolean]
     } yield isValid
   }

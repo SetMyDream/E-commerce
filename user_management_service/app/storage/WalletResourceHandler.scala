@@ -4,6 +4,7 @@ import commands.vault.VaultCommands
 import storage.model.WalletResource
 import storage.repos.WalletRepository
 import exceptions.StorageException._
+import exceptions.StorageException.WalletStorageException._
 import exceptions.VaultException._
 import exceptions.VaultException.TransactionalVaultException._
 
@@ -68,6 +69,7 @@ class WalletResourceHandler @Inject() (
     case e: VaultErrorResponseException =>
       logger.error("Vault sent an unexpected error response", e)
       Future.failed(UnknownVaultException(e))
+    case UnknownTOTPKey => Future.failed(TransactionWithNonexistentUser)
   }
 
 }
