@@ -53,7 +53,7 @@ class WalletRepository @Inject() (
     val action = for {
       withdrawal <- withdrawAction(from, amount)
       _ <- withdrawal match {
-        case w if w == 1 => DBIO.successful()
+        case w if w == 1 => DBIO.successful(w)
         case w if w == 0 => DBIO.failed(TransactionWithNonexistentUser)
         case w =>
           DBIO.failed(
@@ -64,7 +64,7 @@ class WalletRepository @Inject() (
       }
       refill <- topUpAction(to, amount)
       _ <- refill match {
-        case r if r == 1 => DBIO.successful()
+        case r if r == 1 => DBIO.successful(r)
         case r if r == 0 => DBIO.failed(TransactionWithNonexistentUser)
         case r =>
           DBIO.failed(

@@ -55,7 +55,7 @@ class WalletResourceHandler @Inject() (
         vaultClient <- vaultCommands.client
         codeIsValid <- vaultClient.validateTOTPCode(from.toString, totpCode)
         _ <- if (!codeIsValid) Future.failed(InvalidTOTP)
-             else Future.successful()
+             else Future.successful(())
         _ <- walletRepository.transfer(from, to, amount)
       } yield Done
     else

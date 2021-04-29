@@ -125,6 +125,7 @@ class UserController @Inject() (
                   Future.successful(BadRequest(errors))
                 case UnknownDatabaseError(_, Some(cause)) =>
                   throw cause
+                case e => throw e
               }
           }
         }
