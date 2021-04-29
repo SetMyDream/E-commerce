@@ -8,7 +8,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.GivenWhenThen
 import org.scalatest.propspec.AnyPropSpec
 
-class FunctionalPropSpec
+class UserFuncPropSpec
       extends AnyPropSpec
         with ScalaCheckPropertyChecks
         with Matchers

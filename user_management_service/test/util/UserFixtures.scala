@@ -2,17 +2,19 @@ package util
 
 import auth.DefaultEnv
 import auth.models.User
+import storage.UserResourceHandler
 import storage.db.UsersTableRepository
-import storage.model.UserResource
+import storage.model.{UserResource, WalletResource}
 import controllers.validators.CredentialsValidator
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.TestSuite
-import org.scalatest.concurrent.ScalaFutures._
+import org.scalatest.concurrent.ScalaFutures.{convertScalaFuture, PatienceConfig}
 import play.api.test.FakeRequest
 
 import scala.concurrent.Await
@@ -24,11 +26,12 @@ trait UserFixtures extends InjectedServices {
 
   def withDummyUser(testCode: UserResource => Any): Unit = {
     val username = "user1"
-    app.injector.instanceOf[UsersTableRepository]
-      .create(username).futureValue match {
-        case Right(id) => testCode(UserResource(Option(id), username))
-        case Left(_) => fail("Failed to create a user for a fixture")
-      }
+    inject[UsersTableRepository]
+      .create(username)
+      .futureValue match {
+      case Right(id) => testCode(UserResource(Option(id), username))
+      case Left(e) => fail("Failed to create the dummy user user for a fixture", e)
+    }
   }
 
   def withRegisteredDummyUser(
@@ -36,7 +39,7 @@ trait UserFixtures extends InjectedServices {
     ): Unit = {
     withDummyUser { user =>
       val userIdentity = User(user.id.get, user.username)
-      val loginInfo = LoginInfo("credentials", user.id.get.toString)
+      val loginInfo = LoginInfo(CredentialsProvider.ID, user.id.get.toString)
       val credentials = CredentialsValidator(userIdentity.username, "12345678")
       val passInfo = app.injector
         .instanceOf[PasswordHasherRegistry]
@@ -48,12 +51,40 @@ trait UserFixtures extends InjectedServices {
     }
   }
 
+  def withRegisteredDummyUser(
+      username: String = "username",
+      password: String = "12345678",
+      account: BigDecimal = 10000
+    )(testCode: Long => Any
+    )(implicit patience: PatienceConfig
+    ): Unit = {
+    inject[UserResourceHandler]
+      .register(username, password, account)
+      .futureValue match {
+      case Right((_, userId)) => testCode(userId)
+      case Left(e) => fail("Failed to create a user for the dummy user fixture", e)
+    }
+  }
+
+  def withTwoWallets(
+      account1: BigDecimal = 10000,
+      account2: BigDecimal = 10000
+    )(testCode: (WalletResource, WalletResource) => Any
+    )(implicit patience: PatienceConfig
+    ): Unit =
+    withRegisteredDummyUser("user1", account = account1) { user1Id =>
+      withRegisteredDummyUser("user2", account = account2) { user2Id =>
+        val wallet1 = WalletResource(user1Id, account1)
+        val wallet2 = WalletResource(user2Id, account2)
+        testCode(wallet1, wallet2)
+      }
+    }
+
   def withAuthenticatedDummyUser(
       testCode: (DefaultEnv#I, BearerTokenAuthenticator#Value) => Any
     ): Unit = {
     withRegisteredDummyUser { (user, _, loginInfo) =>
       implicit val req = FakeRequest()
-
       val authenticator = authService.create(loginInfo).futureValue
       val token = authService.init(authenticator).futureValue
       testCode(user, token)

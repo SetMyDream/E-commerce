@@ -10,7 +10,7 @@ import org.scalatestplus.play._
 import play.api.mvc.AnyContentAsText
 import com.fasterxml.jackson.core.JsonParseException
 
-class FunctionalSpec
+class UserFuncSpec
       extends PlaySpec
         with PostgresSuite
         with UserFixtures
