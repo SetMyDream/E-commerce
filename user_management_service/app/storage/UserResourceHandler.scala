@@ -1,10 +1,10 @@
 package storage
 
-import commands.vault.VaultCommands
 import storage.model.UserResource
 import storage.repos.UserRepository
 import exceptions.StorageException._
 
+import cats.implicits._
 import cats.data.OptionT
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
@@ -21,7 +21,7 @@ class UserResourceHandler @Inject() (
       val userRepository: UserRepository,
       authInfoRepository: AuthInfoRepository,
       passwordHasherRegistry: PasswordHasherRegistry,
-      vaultCommands: VaultCommands
+      walletResourceHandler: WalletResourceHandler
     )(implicit ec: ExecutionContext) {
 
   def find(id: Long): Future[Option[UserResource]] = {
@@ -34,7 +34,8 @@ class UserResourceHandler @Inject() (
 
   def register(
       _username: String,
-      _password: String
+      _password: String,
+      initialAccount: BigDecimal = 10000
     ): Future[Either[UserStorageException, (LoginInfo, Long)]] = {
     val username = _username.strip
     val password = _password.strip
@@ -45,17 +46,18 @@ class UserResourceHandler @Inject() (
     ).flatten match {
       case errors if errors.nonEmpty => returnFieldErrors(errors).map(Left(_))
       case _ =>
-        userRepository
-          .create(username)
-          .map(userOrError =>
-            userOrError.map(userId => {
-              val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
-              val passInfo = passwordHasherRegistry.current.hash(password)
-              authInfoRepository.add(loginInfo, passInfo)
-              vaultCommands.client.map(_.generateTOTPKey(userId.toString, username))
-              (loginInfo, userId)
-            })
-          )
+        for {
+          userOrError <- userRepository.create(username)
+          userInfoOrError = userOrError.map { userId =>
+            val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
+            val passInfo = passwordHasherRegistry.current.hash(password)
+            authInfoRepository.add(loginInfo, passInfo)
+            (loginInfo, userId)
+          }
+          _ <- userOrError.traverse { userId =>
+            walletResourceHandler.create(userId, username, initialAccount)
+          }
+        } yield userInfoOrError
     }
   }
 
