@@ -1,20 +1,23 @@
 import util._
 import controllers.responces.Token
 import controllers.validators.CredentialsValidator
+import storage.UserResourceHandler
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import org.scalatest.EitherValues._
-import org.scalatest.concurrent.ScalaFutures._
+import org.scalatest.concurrent.ScalaFutures.{convertScalaFuture, PatienceConfig}
 import org.scalatestplus.play._
 import play.api.mvc.AnyContentAsText
 import com.fasterxml.jackson.core.JsonParseException
+import org.scalatest.time.{Millis, Span}
 
 class UserFuncSpec
       extends PlaySpec
         with PostgresSuite
         with UserFixtures
         with SimpleFakeRequest {
+  implicit val patience = PatienceConfig(Span(1500, Millis))
 
   "UserController" should {
     "return user info by user id" in withDummyUser { user =>
@@ -29,11 +32,12 @@ class UserFuncSpec
     }
 
     "return user info by authentication token" in withAuthenticatedDummyUser {
-      (user, token) =>
+      (userId, token) =>
         val resp = makeEmptyRequest(
           path = "/user",
           headers = Seq(Token.httpHeaderName -> token)
         )
+        val user = inject[UserResourceHandler].find(userId).futureValue.get
 
         status(resp) mustBe OK
         contentAsJson(resp) mustBe Json.toJson(user)
@@ -47,7 +51,9 @@ class UserFuncSpec
           headers = Seq(Token.httpHeaderName -> invalidToken)
         )
         status(resp) mustBe UNAUTHORIZED
-        a [JsonParseException] should be thrownBy contentAsJson(resp).validate[Token].get
+        a[JsonParseException] should be thrownBy contentAsJson(resp)
+          .validate[Token]
+          .get
     }
 
     "register a user with valid credentials" in {
@@ -100,11 +106,13 @@ class UserFuncSpec
     "not login a user with invalid credentials" in withRegisteredDummyUser {
       (_, credentials, _) =>
         val invalidCredentials =
-        credentials.copy(password = makeInvalidCopy(credentials.password))
+          credentials.copy(password = makeInvalidCopy(credentials.password))
         val resp = makeJsonRequest("/login", POST, Json.toJson(invalidCredentials))
 
         status(resp) mustBe FORBIDDEN
-        a [JsonParseException] should be thrownBy contentAsJson(resp).validate[Token].get
+        a[JsonParseException] should be thrownBy contentAsJson(resp)
+          .validate[Token]
+          .get
     }
 
   }

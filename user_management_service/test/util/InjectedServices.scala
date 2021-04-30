@@ -2,6 +2,7 @@ package util
 
 import auth.models.User
 import commands.vault.{VaultClient, VaultCommands}
+
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, IdentityService}
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
