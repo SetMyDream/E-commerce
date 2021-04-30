@@ -9,7 +9,6 @@ import exceptions.VaultException._
 import exceptions.VaultException.TransactionalVaultException._
 
 import akka.Done
-import cats.data.OptionT
 import play.api.Logger
 import play.api.libs.json.Json
 
@@ -21,8 +20,8 @@ class WalletResourceHandler @Inject() (
       vaultCommands: VaultCommands) {
   def logger = Logger(classOf[WalletResourceHandler])
 
-  def find(userId: Long): OptionT[Future, WalletResource] = {
-    OptionT(walletRepository.get(userId))
+  def find(userId: Long) = {
+    walletRepository.get(userId)
   }
 
   def create(

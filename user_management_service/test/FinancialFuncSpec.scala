@@ -19,6 +19,13 @@ class FinancialFuncSpec
   implicit val patience = PatienceConfig(Span(1500, Millis))
 
   "FinancialController" must {
+    "show the authenticated user's balance" in withWallet() { wallet =>
+      val token = authenticate(wallet.userId)
+      val resp = makeEmptyRequest("/balance", authToken = token)
+      status(resp) mustBe OK
+      contentAsJson(resp) mustBe Json.toJson(wallet)
+    }
+
     "transfer funds between two accounts" in withTwoWallets() { (from, to) =>
       val amount = 500
       val totp = makeTOTP(from.userId.toString)
@@ -76,10 +83,10 @@ class FinancialFuncSpec
 
   }
 
-  def getBalance(userId: Long) =
-    inject[WalletResourceHandler].find(userId).value.futureValue.get.balance
+  def getBalance(userId: Long): BigDecimal =
+    inject[WalletResourceHandler].find(userId).futureValue.get.balance
 
-  def makeTOTP(keyPostfix: String) =
+  def makeTOTP(keyPostfix: String): String =
     vaultClient.generateTOTPCode(keyPostfix).futureValue
 
   def makeTransferRequest(

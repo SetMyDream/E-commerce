@@ -7,7 +7,7 @@ import exceptions.StorageException.WalletStorageException._
 import exceptions.VaultException._
 import exceptions.VaultException.TransactionalVaultException._
 
-import play.api.libs.json.{JsError, JsValue}
+import play.api.libs.json.{JsError, JsValue, Json}
 import play.api.mvc.{ResponseHeader => _, _}
 import play.api.Logger
 
@@ -19,6 +19,21 @@ class FinancialController @Inject() (
     )(implicit ec: ExecutionContext)
       extends BaseFinancialController(cc) {
   val logger = Logger(classOf[FinancialController])
+
+  def balance = silhouette.SecuredAction.async { implicit request =>
+    val userId = request.identity.id
+    walletResourceHandler.find(userId).map {
+      case Some(wallet) => Ok(Json.toJson(wallet))
+      case None =>
+        logger.error(
+          s"""User $userId should exist (could authenticate), 
+             |but their wallet doesn't.\n
+             |It might be caused by database inconsistency or
+             |an error in authentication mechanism""".stripMargin
+        )
+        ServiceUnavailable
+    }
+  }
 
   def transfer: Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body
