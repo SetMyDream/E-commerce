@@ -46,9 +46,7 @@ class UserController @Inject() (
   @ApiOperation(
     value = "Get a user by authentication token",
     response = classOf[User],
-    authorizations = Array(
-      new Authorization(Token.docsKey)
-    )
+    authorizations = Array(new Authorization(Token.docsKey))
   )
   @ApiResponses(
     Array(new ApiResponse(code = 401, message = "User is not authenticated"))

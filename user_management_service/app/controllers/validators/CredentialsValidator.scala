@@ -9,7 +9,7 @@ import play.api.libs.json.Json
  * @param password a clear-text password string of length of 4 to 20 characters
  */
 @ApiModel(description = "Credentials model")
-case class CredentialsValidator(
+final case class CredentialsValidator(
       @ApiModelProperty(required = true, example = "AzureDiamond")
       username: String,
       @ApiModelProperty(required = true, example = "hunter2")
