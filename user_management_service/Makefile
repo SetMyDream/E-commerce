@@ -6,6 +6,8 @@ db-local:
 		user_management_db
 
 vault-local:
+	mkdir -p .dependencies/vault/ && \
+	rm -rf .dependencies/vault/* && \
 	docker volume create \
 		-o type=none \
 		-o device="$$(pwd)/.dependencies/vault" \
