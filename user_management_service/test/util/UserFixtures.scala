@@ -69,16 +69,23 @@ trait UserFixtures extends InjectedServices {
     }
   }
 
+  def withWallet(
+      username: String = "username",
+      account: BigDecimal = 10000
+    )(testCode: WalletResource => Any
+    )(implicit patience: PatienceConfig
+    ): Unit = withRegisteredDummyUser(username, account = account) { userId =>
+    WalletResource(userId, account)
+  }
+
   def withTwoWallets(
       account1: BigDecimal = 10000,
       account2: BigDecimal = 10000
     )(testCode: (WalletResource, WalletResource) => Any
     )(implicit patience: PatienceConfig
     ): Unit =
-    withRegisteredDummyUser("user1", account = account1) { user1Id =>
-      withRegisteredDummyUser("user2", account = account2) { user2Id =>
-        val wallet1 = WalletResource(user1Id, account1)
-        val wallet2 = WalletResource(user2Id, account2)
+    withWallet("user1", account1) { wallet1 =>
+      withWallet("user2", account2) { wallet2 =>
         testCode(wallet1, wallet2)
       }
     }
@@ -88,13 +95,13 @@ trait UserFixtures extends InjectedServices {
     )(implicit patience: PatienceConfig
     ): Unit = {
     withRegisteredDummyUser() { userId =>
-      val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
-      val token = authenticate(loginInfo)
+      val token = authenticate(userId)
       testCode(userId, token)
     }
   }
 
-  def authenticate(loginInfo: LoginInfo): BearerTokenAuthenticator#Value = {
+  def authenticate(userId: Long): BearerTokenAuthenticator#Value = {
+    val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
     implicit val req = FakeRequest()
     val authenticator = authService.create(loginInfo).futureValue
     authService.init(authenticator).futureValue

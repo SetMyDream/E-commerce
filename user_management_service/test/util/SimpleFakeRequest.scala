@@ -1,5 +1,6 @@
 package util
 
+import controllers.responces.Token
 import controllers.validators.CredentialsValidator
 import storage.model.UserResource
 import storage.repos.UserRepository
@@ -21,9 +22,11 @@ trait SimpleFakeRequest { self: TestSuite with BaseOneAppPerSuite =>
   def makeEmptyRequest(
       path: String,
       method: String = GET,
-      headers: Seq[(String, String)] = Seq.empty
+      headers: Seq[(String, String)] = Seq.empty,
+      authToken: String = ""
     ): Future[Result] =
-    makeRequest(path, method, headers)
+    if (authToken.isEmpty) makeRequest(path, method, headers)
+    else makeRequest(path, method, Seq(Token.httpHeaderName -> authToken) ++ headers)
 
   def makeJsonRequest(
       path: String,

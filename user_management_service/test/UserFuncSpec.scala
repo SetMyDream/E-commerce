@@ -33,10 +33,7 @@ class UserFuncSpec
 
     "return user info by authentication token" in withAuthenticatedDummyUser {
       (userId, token) =>
-        val resp = makeEmptyRequest(
-          path = "/user",
-          headers = Seq(Token.httpHeaderName -> token)
-        )
+        val resp = makeEmptyRequest(path = "/user", authToken = token)
         val user = inject[UserResourceHandler].find(userId).futureValue.get
 
         status(resp) mustBe OK
@@ -46,10 +43,7 @@ class UserFuncSpec
     "return 401 if invalid token is specified" in withAuthenticatedDummyUser {
       (_, token) =>
         val invalidToken = makeInvalidCopy(token)
-        val resp = makeEmptyRequest(
-          path = "/user",
-          headers = Seq(Token.httpHeaderName -> invalidToken)
-        )
+        val resp = makeEmptyRequest(path = "/user", authToken = invalidToken)
         status(resp) mustBe UNAUTHORIZED
         a[JsonParseException] should be thrownBy contentAsJson(resp)
           .validate[Token]
