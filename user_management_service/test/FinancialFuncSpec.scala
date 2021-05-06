@@ -69,7 +69,7 @@ class FinancialFuncSpec
       val initialBalance = getBalance(to)
       val resp = makeTransferRequest(999, to, 500, "999999")
 
-      status(resp) mustBe BAD_REQUEST
+      status(resp) mustBe NOT_FOUND
       getBalance(to) mustBe initialBalance
     }
 
@@ -77,7 +77,7 @@ class FinancialFuncSpec
       val initialBalance = getBalance(from)
       val resp = makeTransferRequest(from, 999, 500, makeTOTP(from.toString))
 
-      status(resp) mustBe BAD_REQUEST
+      status(resp) mustBe NOT_FOUND
       getBalance(from) mustBe initialBalance
     }
 

@@ -56,7 +56,7 @@ class FinancialController @Inject() (
         message = "Insufficient balance on the payer account"
       ),
       new ApiResponse(
-        code = 400,
+        code = 404,
         message = "One or both users don't exist. Empty response"
       ),
       new ApiResponse(
@@ -82,7 +82,7 @@ class FinancialController @Inject() (
         walletResourceHandler.transfer(totp, from, to, amount).map(_ => Ok).recover {
           case InvalidTOTP => Unauthorized
           case InsufficientBalance => PaymentRequired
-          case TransactionWithNonexistentUser => BadRequest
+          case TransactionWithNonexistentUser => NotFound
           case IllegalFieldValuesException(err) => BadRequest(err)
           case UnknownVaultException(cause, msg) =>
             logger.error(msg, cause)
