@@ -51,10 +51,27 @@ class WalletRepository @Inject() (
       amount: BigDecimal
     ) = {
     val action = for {
+      lock <- wallets
+        .filter(w => w.userId === from || w.userId === to)
+        .forUpdate
+        .result
+      _ <- lock.map(_.userId) match {
+        case l if l.size == 2 && l.contains(from) && l.contains(to) =>
+          DBIO.successful(())
+        case l if l.size < 2 => DBIO.failed(TransactionWithNonexistentUser)
+        case _ =>
+          DBIO.failed(
+            stateErrorOnWithdraw(s"in transfer from user $from to user $to")
+          )
+      }
+      payer = lock.filter(_.userId == from).head
+      _ <-
+        if (payer.balance >= amount)
+          DBIO.successful(())
+        else DBIO.failed(InsufficientBalance)
       withdrawal <- withdrawAction(from, amount)
       _ <- withdrawal match {
         case w if w == 1 => DBIO.successful(w)
-        case w if w == 0 => DBIO.failed(TransactionWithNonexistentUser)
         case w =>
           DBIO.failed(
             stateErrorOnWithdraw(
@@ -65,7 +82,6 @@ class WalletRepository @Inject() (
       refill <- topUpAction(to, amount)
       _ <- refill match {
         case r if r == 1 => DBIO.successful(r)
-        case r if r == 0 => DBIO.failed(TransactionWithNonexistentUser)
         case r =>
           DBIO.failed(
             stateErrorOnWithdraw(
@@ -78,13 +94,13 @@ class WalletRepository @Inject() (
   }
 
   protected[storage] def topUpAction(
-      userId: BigDecimal,
+      userId: Long,
       amount: BigDecimal
     ) =
     sqlu"""UPDATE "wallets" SET "balance" = "balance" + $amount WHERE "user_id" = $userId"""
 
   protected[storage] def withdrawAction(
-      userId: BigDecimal,
+      userId: Long,
       amount: BigDecimal
     ) =
     sqlu"""UPDATE "wallets" SET "balance" = "balance" - $amount WHERE "user_id" = $userId"""
@@ -93,7 +109,7 @@ class WalletRepository @Inject() (
     UnknownDatabaseError(
       """Database may be in an illegal state. 
       |Check primary key constraint on "wallets" table. 
-      |Got more than one row updated from a withdraw action """.stripMargin
+      |Got more than one row retrieved for one id """.stripMargin
         + when,
       None
     )
