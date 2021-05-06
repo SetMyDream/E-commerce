@@ -5,6 +5,7 @@ version := "1.0-SNAPSHOT"
 val akkaVersion = "2.5.25"
 
 lazy val root = (project in file("."))
+  .enablePlugins(PlayScala)
     scalaVersion := "2.13.4"
     libraryDependencies ++= Seq(
         "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -14,12 +15,3 @@ lazy val root = (project in file("."))
         "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
         "org.scalatest" %% "scalatest" % "3.0.8" % Test,
         "org.webjars" % "bootstrap" % "3.3.6")
-
-scalacOptions ++= Seq(
-  "-feature",
-  "-deprecation",
-  "-Xfatal-warnings"
-)
-
-fork in run := true
-run / connectInput := true
