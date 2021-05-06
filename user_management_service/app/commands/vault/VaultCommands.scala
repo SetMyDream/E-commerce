@@ -25,9 +25,10 @@ class VaultCommands @Inject() (
   def client(implicit ec: ExecutionContext): Future[VaultClient] =
     cache
       .get[String](VaultConnection.TOKEN_CACHE_KEY)
-      .map {
-        case Some(token) => new VaultClient(this, token)
-        case None => throw new IllegalStateException("Token wasn't found in cache")
+      .flatMap {
+        case Some(token) => Future.successful(new VaultClient(this, token))
+        case None =>
+          Future.failed(new IllegalStateException("Token wasn't found in cache"))
       }
       .transform(identity, e => UnknownVaultException(e))
 
