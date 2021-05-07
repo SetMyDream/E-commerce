@@ -1,4 +1,4 @@
-lazy val playVersion = "2.8.x"
+lazy val playVersion = "2.8.8"
 
 // Use the Play sbt plugin for Play projects
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % playVersion)

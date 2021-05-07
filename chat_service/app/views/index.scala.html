@@ -1,22 +1,67 @@
-@(message: String)
+@(feed: Call, message: Call)(implicit requestHeader: RequestHeader)
 
-@main("Welcome to Play") {
-<div ng-app="ChatApp">
-    <div ng-controller="ChatController as chat">
-        <form>
-            <input type="text" placeholder="Enter name..."
-                   ng-model="chat.username">
-            <input type="text" placeholder="Enter message..."
-                   ng-model="chat.currentMessage">
-            <input type="submit" value="Send"
-                   ng-click="chat.sendMessage()">
+@main("Scala Chat") {
+<script>
+        app.constant('settings', {
+            messageUrl: '@message.absoluteURL()',
+            feedUrl: '@feed.absoluteURL()'
+        });
+    </script>
+<div class="chat ng-cloak" ng-controller="MainCtrl">
+    <div class="input-username-form" ng-show="username === null">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="input-username" class="col-sm-2 control-label">
+                    Username
+                </label>
+                <div class="col-sm-10">
+                    <input id="input-username" type="text" class="form-control" placeholder="Type username here..."
+                           ng-model="usernameInput" ng-focus-if="username === null">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="form-control btn btn-primary" ng-click="setUsername()">
+                        Enter chat
+                    </button>
+                </div>
+            </div>
         </form>
-
-        <ul>
-            <li ng-repeat="msg in chat.messages track by $index">
-                {{msg}}
-            </li>
-        </ul>
+    </div>
+    <div class="chat-room" ng-show="username !== null">
+        <div class="messages" ng-scroll-to-bottom="messageReceived">
+            <div class="no-messages" ng-show="messages.length == 0">
+                No messages yet
+            </div>
+            <div class="message row" ng-repeat="message in messages">
+                <div class="col-sm-2">
+                    <div class="username" ng-bind="message.username"></div>
+                </div>
+                <div class="col-sm-10">
+                    <div class="content" ng-bind="message.content"></div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <form class="form-horizontal" ng-submit="sendMessage()">
+            <div class="form-group">
+                <label for="input-content" class="col-sm-2 control-label">
+                    Message
+                </label>
+                <div class="col-sm-10">
+                        <textarea id="input-content" class="form-control" placeholder="Type message here..." rows="5"
+                                  ng-model="messageInput" ng-keydown="sendMessageOnEnter($event)" ng-focus-if="username !== null"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="form-control btn btn-primary">Submit</button>
+                    <div class="misc-controls">
+                        <a href="javascript:void(0);" ng-click="backToLogin()">Back to login page</a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 }
