@@ -14,4 +14,5 @@ lazy val root = (project in file("."))
         "org.scodec" %% "scodec-core" % "1.11.4",
         "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
         "org.scalatest" %% "scalatest" % "3.0.8" % Test,
-        "org.webjars" % "bootstrap" % "3.3.6")
+        "org.webjars" % "bootstrap" % "3.3.6",
+    )

@@ -1,15 +1,15 @@
 package controllers
 
-import play.api._
+import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import play.api.libs.EventSource
-import play.api.libs.iteratee.{Iteratee, Concurrent}
+import scala.concurrent._
 import play.api.libs.json.JsValue
-import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
+import play.api.routing.Router.empty.routes
+import play.mvc.Controller
 
 class Application extends Controller {
 
-  val (chatOut, chatChannel) = Concurrent.broadcast[JsValue]
+  val (chatOut, chatChannel) = Future.broadcast[JsValue]
 
   // Following two lines are just for debugging broadcast
   val chatDebug = Iteratee.foreach[JsValue](m => println("Debug: " + m.toString))

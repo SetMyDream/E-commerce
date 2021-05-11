@@ -13,5 +13,3 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.1.2")
 
 // Multiple terminal command threads
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
-
-
