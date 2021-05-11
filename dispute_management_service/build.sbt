@@ -14,3 +14,5 @@ libraryDependencies ++= {
     "ch.qos.logback"         % "logback-classic"        % "1.2.3"
   )
 }
+
+addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
