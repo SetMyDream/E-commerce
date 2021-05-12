@@ -14,6 +14,7 @@ libraryDependencies ++= {
     "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
     "ch.qos.logback"         % "logback-classic"        % "1.2.3",
     "org.postgresql"         % "postgresql"             % "42.2.19",
+    "org.flywaydb"           % "flyway-core"            % "7.8.2",
     "org.tpolecat"          %% "doobie-core"            % doobieVersion,
     "org.tpolecat"          %% "doobie-hikari"          % doobieVersion,
     "org.tpolecat"          %% "doobie-postgres"        % doobieVersion

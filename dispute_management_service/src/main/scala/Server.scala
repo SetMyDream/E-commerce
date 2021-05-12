@@ -1,6 +1,6 @@
 import config._
 import routes.initHttpApp
-import storage.db.transactorRes
+import storage.db.{transactorRes, Migrations}
 
 import cats.effect._
 import org.http4s.HttpApp
@@ -20,6 +20,7 @@ class Server(
       config <- configRes[IO]
       Config(serverConfig, dbConfig) = config
       transactor <- transactorRes[IO](dbConfig)
+      _ <- Resource.eval(Migrations.applyMigrations(transactor))
       httpApp = initHttpApp(transactor)
       server <- server(serverConfig, httpApp)
     } yield server
