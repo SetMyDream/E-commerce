@@ -1,8 +1,10 @@
 package storage
 
-import exceptions.StorageException
-import exceptions.StorageException.IllegalFieldValuesException
+import storage.model.UserResource
+import storage.repos.UserRepository
+import exceptions.StorageException._
 
+import cats.implicits._
 import cats.data.OptionT
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
@@ -18,7 +20,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class UserResourceHandler @Inject() (
       val userRepository: UserRepository,
       authInfoRepository: AuthInfoRepository,
-      passwordHasherRegistry: PasswordHasherRegistry
+      passwordHasherRegistry: PasswordHasherRegistry,
+      walletResourceHandler: WalletResourceHandler
     )(implicit ec: ExecutionContext) {
 
   def find(id: Long): Future[Option[UserResource]] = {
@@ -29,18 +32,11 @@ class UserResourceHandler @Inject() (
     OptionT(userRepository.get(username))
   }
 
-  def create(_username: String): Future[Either[StorageException, Long]] = {
-    val username = _username.strip
-    checkForLength(username, "username") match {
-      case Some(err) => returnFieldErrors(Seq(err)).map(Left(_))
-      case _ => userRepository.create(username)
-    }
-  }
-
   def register(
       _username: String,
-      _password: String
-    ): Future[Either[StorageException, (LoginInfo, Long)]] = {
+      _password: String,
+      initialAccount: BigDecimal = 10000
+    ): Future[Either[UserStorageException, (LoginInfo, Long)]] = {
     val username = _username.strip
     val password = _password.strip
 
@@ -50,16 +46,18 @@ class UserResourceHandler @Inject() (
     ).flatten match {
       case errors if errors.nonEmpty => returnFieldErrors(errors).map(Left(_))
       case _ =>
-        userRepository
-          .create(username)
-          .map(userOrError =>
-            userOrError.map(userId => {
-              val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
-              val passInfo = passwordHasherRegistry.current.hash(password)
-              authInfoRepository.add(loginInfo, passInfo)
-              (loginInfo, userId)
-            })
-          )
+        for {
+          userOrError <- userRepository.create(username)
+          userInfoOrError = userOrError.map { userId =>
+            val loginInfo = LoginInfo(CredentialsProvider.ID, userId.toString)
+            val passInfo = passwordHasherRegistry.current.hash(password)
+            authInfoRepository.add(loginInfo, passInfo)
+            (loginInfo, userId)
+          }
+          _ <- userOrError.traverse { userId =>
+            walletResourceHandler.create(userId, username, initialAccount)
+          }
+        } yield userInfoOrError
     }
   }
 

@@ -1,7 +1,7 @@
 package auth
 
 import auth.models.User
-import storage.PasswordInfoRepository
+import storage.repos.PasswordInfoRepository
 import exceptions.handlers.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler}
 import controllers.responces.Token
 

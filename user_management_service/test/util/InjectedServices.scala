@@ -1,10 +1,12 @@
 package util
 
 import auth.models.User
+import commands.vault.{VaultClient, VaultCommands}
 
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, IdentityService}
 import com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator
+import org.scalatest.concurrent.ScalaFutures.{convertScalaFuture, PatienceConfig}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -27,4 +29,7 @@ trait InjectedServices { self: GuiceOneAppPerSuite =>
 
   def identityService: IdentityService[User] =
     injectTyped[IdentityService[User]]
+
+  def vaultClient(implicit patience: PatienceConfig): VaultClient =
+    inject[VaultCommands].client.futureValue
 }

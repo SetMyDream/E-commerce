@@ -3,6 +3,9 @@ GET         /user/:id                    controllers.UserController.getUser(id: 
 POST        /login                       controllers.UserController.login
 POST        /register                    controllers.UserController.register
 
+GET         /balance                     controllers.FinancialController.balance
+POST        /transfer                    controllers.FinancialController.transfer
+
 # Swagger API
 GET         /swagger.json                controllers.ApiHelpController.getResources
 GET         /api/docs                    controllers.DocsController.redirectDocs

@@ -8,7 +8,7 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.Helpers._
 
-class CommandsSpec
+class CommandsFuncSpec
       extends PlaySpec
         with GuiceOneAppPerSuite
         with InjectedServices

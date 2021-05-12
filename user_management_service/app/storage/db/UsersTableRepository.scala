@@ -1,8 +1,9 @@
 package storage.db
 
-import exceptions.StorageException
-import exceptions.StorageException.{UnknownDatabaseError, UsernameAlreadyTaken}
-import storage.{UserRepository, UserResource}
+import exceptions.StorageException._
+import exceptions.StorageException.UsersStorageException._
+import storage.repos.UserRepository
+import storage.model.UserResource
 
 import org.postgresql.util.PSQLException
 import play.api.db.slick.DatabaseConfigProvider
@@ -38,14 +39,14 @@ class UsersTableRepository @Inject() (
   /** The starting point for all queries on the USERS table. */
   val users = TableQuery[UsersTable]
 
-  def create(username: String): Future[Either[StorageException, Long]] =
+  def create(username: String): Future[Either[UserStorageException, Long]] =
     db.run((users returning users.map(_.id)) += UserResource(None, username))
       .map(Right(_))
-      .recoverWith {
+      .recover {
         case e: PSQLException if isUniqueConstraintException(e) =>
-          Future(Left(UsernameAlreadyTaken()))
+          Left(UsernameAlreadyTaken)
         case e: PSQLException =>
-          Future(Left(UnknownDatabaseError(cause = Some(e))))
+          Left(UnknownDatabaseError(cause = Some(e)))
       }
 
   def get(username: String): Future[Option[UserResource]] = db.run {

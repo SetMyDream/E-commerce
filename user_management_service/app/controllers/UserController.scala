@@ -1,10 +1,12 @@
 package controllers
 
 import auth.models.User
+import controllers.components.{BaseUserController, UserControllerComponents}
 import controllers.responces.Token
 import controllers.validators.CredentialsValidator
 import exceptions.StorageException._
-import storage.UserResource
+import exceptions.StorageException.UsersStorageException._
+import storage.model.UserResource
 
 import com.mohiva.play.silhouette.api.{Authorization => _, _}
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
@@ -22,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UserController @Inject() (
       cc: UserControllerComponents
     )(implicit ec: ExecutionContext)
-      extends UserBaseController(cc) {
+      extends BaseUserController(cc) {
 
   @ApiOperation(
     value = "Get a user using their ID",
@@ -44,9 +46,7 @@ class UserController @Inject() (
   @ApiOperation(
     value = "Get a user by authentication token",
     response = classOf[User],
-    authorizations = Array(
-      new Authorization(Token.docsKey)
-    )
+    authorizations = Array(new Authorization(Token.docsKey))
   )
   @ApiResponses(
     Array(new ApiResponse(code = 401, message = "User is not authenticated"))
@@ -117,12 +117,13 @@ class UserController @Inject() (
               )
             case Left(e) =>
               e match {
-                case e: UsernameAlreadyTaken =>
-                  Future.successful(Conflict(e.msg))
-                case e: IllegalFieldValuesException =>
-                  Future.successful(BadRequest(e.errors))
-                case e: UnknownDatabaseError =>
-                  throw e.cause.get
+                case UsernameAlreadyTaken =>
+                  Future.successful(Conflict(UsernameAlreadyTaken.msg))
+                case IllegalFieldValuesException(errors) =>
+                  Future.successful(BadRequest(errors))
+                case UnknownDatabaseError(_, Some(cause)) =>
+                  throw cause
+                case e => throw e
               }
           }
         }
@@ -209,22 +210,5 @@ class UserController @Inject() (
       events.foreach(silhouette.env.eventBus.publish(_))
       result
     }
-
-  @Deprecated
-  def createUser(): Action[AnyContent] = Action.async { implicit request =>
-    request.body.asJson.flatMap { json =>
-      (json \ "username").toOption
-    } map { username =>
-      userResourceHandler.create(username.toString).collect {
-        case Right(id) => Ok(Json.obj("user_id" -> id))
-        case Left(e) =>
-          e match {
-            case e: UsernameAlreadyTaken => Conflict(e.msg)
-            case e: IllegalFieldValuesException => BadRequest(e.errors)
-            case e: UnknownDatabaseError => throw e.cause.get
-          }
-      }
-    } getOrElse Future.successful(BadRequest("Bad request format"))
-  }
 
 }

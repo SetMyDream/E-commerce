@@ -1,5 +1,5 @@
 import commands.vault.VaultConnection
-import storage.UserRepository
+import storage.repos.UserRepository
 import storage.db.UsersTableRepository
 
 import play.api.{Configuration, Environment}

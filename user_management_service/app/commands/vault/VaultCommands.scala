@@ -1,10 +1,12 @@
 package commands.vault
 
 import commands.vault.model.AppRoleCredentials
+import exceptions.VaultException._
+import exceptions.VaultException.TransactionalVaultException._
 
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -21,10 +23,14 @@ class VaultCommands @Inject() (
   val ISSUER = "ECOMM-user-management"
 
   def client(implicit ec: ExecutionContext): Future[VaultClient] =
-    cache.get[String](VaultConnection.TOKEN_CACHE_KEY).map {
-      case Some(token) => new VaultClient(this, token)
-      case None => throw new IllegalStateException("Token wasn't found in cache")
-    }
+    cache
+      .get[String](VaultConnection.TOKEN_CACHE_KEY)
+      .flatMap {
+        case Some(token) => Future.successful(new VaultClient(this, token))
+        case None =>
+          Future.failed(new IllegalStateException("Token wasn't found in cache"))
+      }
+      .transform(identity, e => UnknownVaultException(e))
 
   def keyName(keyPostfix: String) = TOTP_KEY_PREFIX + keyPostfix
 
@@ -32,6 +38,7 @@ class VaultCommands @Inject() (
       authToken: String
     )(keyPostfix: String,
       accountName: String
+    )(implicit ec: ExecutionContext
     ): Future[WSResponse] = {
     val payload = Json.obj(
       "generate" -> true,
@@ -41,6 +48,7 @@ class VaultCommands @Inject() (
     )
     authenticatedRequest(authToken)("/totp/keys/" + keyName(keyPostfix))
       .post(payload)
+      .transform(identity, e => UnknownVaultException(e))
   }
 
   protected[vault] def validateTOTPCode(
@@ -54,8 +62,16 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .post(payload)
-      valid = (res.json \ "data" \ "valid").as[Boolean]
-    } yield valid
+      _ <- validateVaultResponse(res).recoverWith {
+        case e @ VaultErrorResponseException(resp) =>
+          (resp \ "errors").get match {
+            case JsArray(value) if value.head.as[String].startsWith("unknown key") =>
+              Future.failed(UnknownTOTPKey)
+            case _ => Future.failed(e)
+          }
+      }
+      isValid = (res.json \ "data" \ "valid").as[Boolean]
+    } yield isValid
   }
 
   protected[vault] def generateTOTPCode(
@@ -67,8 +83,9 @@ class VaultCommands @Inject() (
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .get()
-      valid = (res.json \ "data" \ "code").as[String]
-    } yield valid
+      _ <- validateVaultResponse(res)
+      code = (res.json \ "data" \ "code").as[String]
+    } yield code
 
   protected[vault] def authenticatedRequest(authToken: String)(uri: String) =
     ws.url(API_PATH + uri).withHttpHeaders(AUTH_TOKEN_HTTP_HEADER -> authToken)
@@ -81,8 +98,15 @@ class VaultCommands @Inject() (
       "role_id" -> credentials.role_id,
       "secret_id" -> credentials.secret_id
     )
-    val resp = ws.url(s"$API_PATH/auth/approle/login").post(loginPayload)
-    resp.map(_.json \ "auth" \ "client_token").map(_.as[String])
+    for {
+      res <- ws.url(s"$API_PATH/auth/approle/login").post(loginPayload)
+      _ <- validateVaultResponse(res)
+      token = res.json \ "auth" \ "client_token"
+    } yield token.as[String]
   }
+
+  private def validateVaultResponse(resp: WSResponse): Future[WSResponse] =
+    if (resp.status != 200) Future.failed(VaultErrorResponseException(resp.json))
+    else Future.successful(resp)
 
 }

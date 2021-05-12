@@ -1,6 +1,7 @@
-package storage
+package storage.repos
 
-import exceptions.StorageException
+import exceptions.StorageException._
+import storage.model.UserResource
 
 import scala.concurrent.Future
 
@@ -17,6 +18,6 @@ trait UserRepository {
    * Create a new user if the username hasn't been taken.
    * Returns an exception or id of the created user
    */
-  def create(username: String): Future[Either[StorageException, Long]]
+  def create(username: String): Future[Either[UserStorageException, Long]]
 
 }

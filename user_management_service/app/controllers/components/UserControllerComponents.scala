@@ -1,4 +1,4 @@
-package controllers
+package controllers.components
 
 import storage.UserResourceHandler
 import auth.{DefaultEnv, UserService}
@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext
  * This is a good way to minimize the surface area exposed to the controller, so the
  * controller only has to have one thing injected.
  */
-case class UserControllerComponents @Inject() (
+final case class UserControllerComponents @Inject() (
       userResourceHandler: UserResourceHandler,
       silhouette: Silhouette[DefaultEnv],
       credentialsProvider: CredentialsProvider,
@@ -32,7 +32,7 @@ case class UserControllerComponents @Inject() (
       extends ControllerComponents
 
 /** To make integrating some UserController dependencies easier */
-class UserBaseController @Inject() (ucc: UserControllerComponents)
+class BaseUserController @Inject()(ucc: UserControllerComponents)
       extends BaseController {
 
   override protected def controllerComponents: ControllerComponents = ucc
