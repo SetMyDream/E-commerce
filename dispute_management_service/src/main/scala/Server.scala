@@ -1,5 +1,6 @@
-import routes.httpApp
 import config._
+import routes.initHttpApp
+import storage.db.transactorRes
 
 import cats.effect._
 import org.http4s.HttpApp
@@ -13,10 +14,13 @@ class Server(
       C: ConcurrentEffect[IO],
       T: Timer[IO],
       S: ContextShift[IO]) {
+
   def start: Resource[IO, BlazeServer[IO]] = {
     for {
       config <- configRes[IO]
-      Config(serverConfig) = config
+      Config(serverConfig, dbConfig) = config
+      transactor <- transactorRes[IO](dbConfig)
+      httpApp = initHttpApp(transactor)
       server <- server(serverConfig, httpApp)
     } yield server
   }

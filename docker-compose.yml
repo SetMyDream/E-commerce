@@ -36,10 +36,27 @@ services:
       - dispute_management_credentials:/vault
     environment:
       SERVICE_PORT: 8080
+      DB_URL: jdbc:postgresql://dispute_management_db:5432/disputes
+      DB_USER: postgres
+      DB_PASSWORD: postgres
     ports:
       - "8082:8080"
     depends_on:
       - vault
+      - dispute_management_db
+
+  dispute_management_db:
+    image: postgres:13-alpine
+    container_name: ecomm-dispute-db
+    user: postgres
+    volumes:
+      - ./dispute_management_service/.postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: disputes
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "9082:5432"
 
   product_inventory:
     build:
@@ -87,7 +104,7 @@ services:
 
   user_management_db:
     image: postgres:13-alpine
-    container_name: ecomm-userdb
+    container_name: ecomm-user-db
     user: postgres
     volumes:
       - ./user_management_service/.postgres_data:/var/lib/postgresql/data

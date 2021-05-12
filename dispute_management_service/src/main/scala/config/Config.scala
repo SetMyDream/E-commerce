@@ -1,3 +1,3 @@
 package config
 
-final case class Config(server: ServerConfig)
+final case class Config(server: ServerConfig, database: DbConfig)
