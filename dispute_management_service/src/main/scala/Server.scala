@@ -5,7 +5,6 @@ import cats.effect._
 import org.http4s.HttpApp
 import org.http4s.server.{Server => BlazeServer}
 import org.http4s.server.blaze._
-import pureconfig.module.catseffect.loadConfigF
 
 import scala.concurrent.ExecutionContext
 
@@ -16,7 +15,7 @@ class Server(
       S: ContextShift[IO]) {
   def start: Resource[IO, BlazeServer[IO]] = {
     for {
-      config <- config
+      config <- configRes[IO]
       Config(serverConfig) = config
       server <- server(serverConfig, httpApp)
     } yield server
@@ -31,14 +30,6 @@ class Server(
       .bindHttp(port, host)
       .withHttpApp(routes)
       .resource
-  }
-
-  private[this] def config: Resource[IO, Config] = {
-    import pureconfig.generic.auto._
-    for {
-      blocker <- Blocker[IO]
-      config <- Resource.eval(loadConfigF[IO, Config](blocker))
-    } yield config
   }
 
 }
