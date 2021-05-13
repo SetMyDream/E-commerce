@@ -30,4 +30,8 @@ class DisputeRepository[F[_]: Sync: Monad](transactor: Transactor[F]) {
       }
       .transact(transactor)
 
+  def get(disputeId: Long): F[Option[Dispute]] = ctx.run {
+    query[Dispute].filter(_.id == lift(disputeId))
+  }.transact(transactor).map(_.headOption)
+
 }
