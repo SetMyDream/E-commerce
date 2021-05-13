@@ -4,14 +4,12 @@ import storage.model.{Dispute, DisputeStatus => Status}
 
 import cats.Monad
 import cats.syntax.functor._
-import cats.syntax.flatMap._
 import cats.effect.Sync
-import doobie.Transactor
+import doobie._
 import doobie.implicits._
+import doobie.postgres._
 import doobie.quill.DoobieContext
 import io.getquill.SnakeCase
-
-import java.time.LocalDate
 
 class DisputeRepository[F[_]: Sync: Monad](transactor: Transactor[F]) {
   val ctx = new DoobieContext.Postgres(SnakeCase)
@@ -21,15 +19,15 @@ class DisputeRepository[F[_]: Sync: Monad](transactor: Transactor[F]) {
       buyerId: Long,
       sellerId: Long,
       purchaseId: Long
-    ): F[Long] = for {
-    dispute <- Sync[F].delay(
-      Dispute(0, buyerId, sellerId, purchaseId, Status.Active, LocalDate.now())
-    )
-    disputeId <- ctx.run {
-      query[Dispute]
-        .insert(lift(dispute))
-        .returningGenerated(_.id)
-    }.transact(transactor)
-  } yield disputeId
+    ): F[Either[UniqueAgendaViolation.type, Long]] =
+    sql"""
+      INSERT INTO "dispute" 
+      (buyer_id, seller_id, purchase_id, status) VALUES 
+      ($buyerId, $sellerId, $purchaseId, ${Status.Active.value})""".update
+      .withUniqueGeneratedKeys[Long]("id")
+      .attemptSomeSqlState {
+        case sqlstate.class23.UNIQUE_VIOLATION => UniqueAgendaViolation
+      }
+      .transact(transactor)
 
 }

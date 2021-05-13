@@ -20,6 +20,7 @@ libraryDependencies ++= {
     "org.tpolecat"          %% "doobie-hikari"          % doobieVersion,
     "org.tpolecat"          %% "doobie-postgres"        % doobieVersion,
     "org.tpolecat"          %% "doobie-quill"           % doobieVersion,
+    "com.beachape"          %% "enumeratum-doobie"      % enumeratumVersion,
     "com.beachape"          %% "enumeratum-quill"       % enumeratumVersion
   )
 }
