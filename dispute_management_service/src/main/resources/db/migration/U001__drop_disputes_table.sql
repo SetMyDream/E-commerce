@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "disputes" cascade;
+DROP TABLE IF EXISTS "dispute" cascade;

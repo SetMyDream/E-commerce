@@ -6,6 +6,7 @@ libraryDependencies ++= {
   val http4sVersion = "0.21.22"
   val pureConfigVersion = "0.14.1"
   val doobieVersion = "0.12.1"
+  val enumeratumVersion = "1.6.0"
 
   Seq(
     "org.http4s"            %% "http4s-dsl"             % http4sVersion,
@@ -17,7 +18,9 @@ libraryDependencies ++= {
     "org.flywaydb"           % "flyway-core"            % "7.8.2",
     "org.tpolecat"          %% "doobie-core"            % doobieVersion,
     "org.tpolecat"          %% "doobie-hikari"          % doobieVersion,
-    "org.tpolecat"          %% "doobie-postgres"        % doobieVersion
+    "org.tpolecat"          %% "doobie-postgres"        % doobieVersion,
+    "org.tpolecat"          %% "doobie-quill"           % doobieVersion,
+    "com.beachape"          %% "enumeratum-quill"       % enumeratumVersion
   )
 }
 
