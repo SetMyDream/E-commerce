@@ -1,0 +1,3 @@
+CREATE TABLE "disputes" (
+  "id" BIGSERIAL NOT NULL PRIMARY KEY
+);
