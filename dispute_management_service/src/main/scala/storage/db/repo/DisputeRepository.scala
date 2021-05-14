@@ -19,16 +19,18 @@ class DisputeRepository[F[_]: Sync: Monad](transactor: Transactor[F]) {
       buyerId: Long,
       sellerId: Long,
       purchaseId: Long
-    ): F[Either[UniqueAgendaViolation.type, Long]] =
-    sql"""
-      INSERT INTO "dispute" 
-      (buyer_id, seller_id, purchase_id, status) VALUES 
-      ($buyerId, $sellerId, $purchaseId, ${Status.Active.value})""".update
-      .withUniqueGeneratedKeys[Long]("id")
-      .attemptSomeSqlState { case sqlstate.class23.UNIQUE_VIOLATION =>
-        UniqueAgendaViolation
-      }
-      .transact(transactor)
+    ): F[Either[UniqueAgendaViolation.type, Long]] = ctx.run {
+    query[Dispute]
+      .insert(
+        _.buyerId -> lift(buyerId),
+        _.sellerId -> lift(sellerId),
+        _.purchaseId -> lift(purchaseId),
+        _.status -> lift(Status.Active: Status)
+      )
+      .returningGenerated(_.id)
+  }.attemptSomeSqlState {
+    case sqlstate.class23.UNIQUE_VIOLATION => UniqueAgendaViolation
+  }.transact(transactor)
 
   def get(disputeId: Long): F[Option[Dispute]] = ctx.run {
     queryById(lift(disputeId))

@@ -6,8 +6,7 @@ sealed abstract class DisputeStatus(val value: Byte) extends ByteEnumEntry
 
 object DisputeStatus
       extends ByteEnum[DisputeStatus]
-        with ByteQuillEnum[DisputeStatus]
-        with ByteDoobieEnum[DisputeStatus] {
+        with ByteQuillEnum[DisputeStatus] {
   val values = findValues
 
   case object Active extends DisputeStatus(1)
