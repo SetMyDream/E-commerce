@@ -9,7 +9,7 @@ import play.api.routing.Router.empty.routes
 import play.api.libs.EventSource
 import play.api.mvc.{InjectedController}
 
-class Application extends InjectedController {
+class Application extends InjectedController with SourceDef {
 
    def index = Action { implicit req =>
     Ok(views.html.index(routes.Application.chatFeed(), routes.Application.postMessage()))
