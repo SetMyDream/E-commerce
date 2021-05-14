@@ -26,3 +26,13 @@ libraryDependencies ++= {
 }
 
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
+
+scalacOptions ~= (_.filterNot(Set(
+//  "-Wunused:imports",
+//  "-Wunused:implicits",
+  "-Wunused:explicits",
+  "-Wunused:locals",
+  "-Wunused:params",
+  "-Wunused:patvars",
+  "-Wunused:privates"
+)))
