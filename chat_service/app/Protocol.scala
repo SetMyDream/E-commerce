@@ -12,6 +12,7 @@ object Protocol {
 
   object ClientCommand {
     case class RequestUsername(name: Username) extends ClientCommand
+    case class PrivateMessage(value: String) extends ClientCommand
     case class SendMessage(value: String) extends ClientCommand
 
     private val codec: Codec[ClientCommand] = discriminated[ClientCommand]
@@ -24,7 +25,7 @@ object Protocol {
   }
 
 
-  /** Base trait for messages sent from the server to the client. */
+  /** Base trait for messages sent from the server to   `the client. */
   sealed trait ServerCommand
   object ServerCommand {
     case class Welcome(name: Username, banner: String) extends ServerCommand
