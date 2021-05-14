@@ -1,21 +1,17 @@
 package controllers
 
 import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
-import play.api.libs.EventSource
+
 import scala.concurrent._
+
 import play.api.libs.json.JsValue
 import play.api.routing.Router.empty.routes
-import play.mvc.Controller
+import play.api.libs.EventSource
+import play.api.mvc.{InjectedController}
 
-class Application extends Controller {
+class Application extends InjectedController {
 
-  val (chatOut, chatChannel) = Future.broadcast[JsValue]
-
-  // Following two lines are just for debugging broadcast
-  val chatDebug = Iteratee.foreach[JsValue](m => println("Debug: " + m.toString))
-  chatOut |>>> chatDebug
-
-  def index = Action { implicit req =>
+   def index = Action { implicit req =>
     Ok(views.html.index(routes.Application.chatFeed(), routes.Application.postMessage()))
   }
 
