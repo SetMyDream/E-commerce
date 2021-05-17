@@ -11,6 +11,7 @@ libraryDependencies ++= {
   Seq(
     "org.http4s"            %% "http4s-dsl"             % http4sVersion,
     "org.http4s"            %% "http4s-blaze-server"    % http4sVersion,
+    "org.http4s"            %% "http4s-blaze-client"    % http4sVersion,
     "com.github.pureconfig" %% "pureconfig"             % pureConfigVersion,
     "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
     "ch.qos.logback"         % "logback-classic"        % "1.2.3",
@@ -26,12 +27,14 @@ libraryDependencies ++= {
 
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 
-scalacOptions ~= (_.filterNot(Set(
+scalacOptions ~= (_.filterNot(
+  Set(
 //  "-Wunused:imports",
 //  "-Wunused:implicits",
-  "-Wunused:explicits",
-  "-Wunused:locals",
-  "-Wunused:params",
-  "-Wunused:patvars",
-  "-Wunused:privates"
-)))
+    "-Wunused:explicits",
+    "-Wunused:locals",
+    "-Wunused:params",
+    "-Wunused:patvars",
+    "-Wunused:privates"
+  )
+))

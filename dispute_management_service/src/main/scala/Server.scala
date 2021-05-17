@@ -1,5 +1,6 @@
 import config._
 import routes.initHttpApp
+import services.ServicesHandler.servicesRes
 import storage.db.{transactorRes, Migrations}
 
 import cats.effect._
@@ -17,15 +18,16 @@ class Server(
 
   def start: Resource[IO, BlazeServer[IO]] = {
     for {
-      Config(serverConfig, dbConfig) <- configRes[IO]
+      Config(serverConfig, dbConfig, clientConfig) <- configRes[IO]
       transactor <- transactorRes[IO](dbConfig)
       _ <- Resource.eval(Migrations.applyMigrations(transactor))
+      services <- servicesRes[IO](clientConfig)
       httpApp = initHttpApp(transactor)
-      server <- server(serverConfig, httpApp)
+      server <- serverRes(serverConfig, httpApp)
     } yield server
   }
 
-  private[this] def server(
+  private[this] def serverRes(
       config: ServerConfig,
       routes: HttpApp[IO]
     ): Resource[IO, BlazeServer[IO]] = {
