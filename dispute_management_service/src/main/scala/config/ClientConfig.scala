@@ -1,5 +1,5 @@
 package config
 
-import java.net.URL
+import org.http4s.Uri
 
-final case class ClientConfig(userManagementUrl: URL, poolSize: Int)
+final case class ClientConfig(userManagementUri: Uri, poolSize: Int)

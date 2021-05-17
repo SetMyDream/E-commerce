@@ -10,7 +10,7 @@ object ServicesHandler {
   def servicesRes[F[_]: ConcurrentEffect](
       config: ClientConfig
     ): Resource[F, Services[F]] = ServiceClient.res(config).map { client =>
-    val userService = new UserService(client)
+    val userService = new UserService(client, config.userManagementUri)
     Services(userService)
   }
 }

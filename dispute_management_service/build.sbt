@@ -14,6 +14,7 @@ libraryDependencies ++= {
     "org.http4s"            %% "http4s-blaze-client"    % http4sVersion,
     "com.github.pureconfig" %% "pureconfig"             % pureConfigVersion,
     "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
+    "com.github.pureconfig" %% "pureconfig-http4s"      % pureConfigVersion,
     "ch.qos.logback"         % "logback-classic"        % "1.2.3",
     "org.postgresql"         % "postgresql"             % "42.2.19",
     "org.flywaydb"           % "flyway-core"            % "7.8.2",
