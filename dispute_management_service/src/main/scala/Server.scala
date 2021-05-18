@@ -18,11 +18,11 @@ class Server(
 
   def start: Resource[IO, BlazeServer[IO]] = {
     for {
-      Config(serverConfig, dbConfig, clientConfig) <- configRes[IO]
+      Config(serverConfig, httpConfig, dbConfig, clientConfig) <- configRes[IO]
       transactor <- transactorRes[IO](dbConfig)
       _ <- Resource.eval(Migrations.applyMigrations(transactor))
-      services <- servicesRes[IO](clientConfig)
-      httpApp = initHttpApp(transactor)
+      services <- servicesRes[IO](clientConfig, httpConfig)
+      httpApp = initHttpApp(httpConfig, transactor)
       server <- serverRes(serverConfig, httpApp)
     } yield server
   }
