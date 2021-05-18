@@ -1,23 +1,18 @@
 package controllers
 
 import play.api.libs.json.JsValue
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Source}
+import play.api.mvc.ControllerComponents
 
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import scala.concurrent.duration.DurationInt
+import javax.inject.Inject
 
-trait SourceDef {
-  def chatChannel: Source[JsValue, _] = {
-    val df: DateTimeFormatter = DateTimeFormatter.ofPattern("HH mm ss")
-    val tickSource = Source.tick(0.millis, 100.millis, "TICK")
-    val s = tickSource.map(_ => df.format(ZonedDateTime.now()))
-    s
-  }
+trait SourceDef @Inject() (val controllerComponents: ControllerComponents, inputSanitizer: InputSanitizer){
+  val chatChannel = MergeHub.source[JsValue]
+    .log("source")
+    // Let's also do some input sanitization to avoid XSS attacks
+    .map(inputSanitizer.sanitize)
+    .recoverWithRetries(-1, { case _: Exception => Source.empty })
 
-
-  def ChatOut: Source[JsValue, _] = {
-
-  }
-
+  val ChatOut = BroadcastHub.sink[JsValue]
+  chatChannel.toMat (ChatOut) (Keep.both).run ()
 }

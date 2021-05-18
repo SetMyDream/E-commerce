@@ -1,10 +1,6 @@
 package controllers
 
-import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 
-import scala.concurrent._
-
-import play.api.libs.json.JsValue
 import play.api.routing.Router.empty.routes
 import play.api.libs.EventSource
 import play.api.mvc.{InjectedController}
