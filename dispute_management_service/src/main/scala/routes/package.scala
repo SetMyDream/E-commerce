@@ -1,10 +1,10 @@
 import config.HttpConfig
 import services.ServicesHandler.Services
+import storage.db.repo.DisputeRepository
 
 import cats.effect.IO
 import doobie.util.transactor.Transactor
-import org.http4s.{HttpApp, HttpRoutes}
-import org.http4s.dsl.io._
+import org.http4s.HttpApp
 import org.http4s.implicits._
 
 package object routes {
@@ -13,11 +13,11 @@ package object routes {
       httpConfig: HttpConfig,
       transactor: Transactor[IO],
       services: Services[IO]
-    ): HttpApp[IO] = HttpRoutes.of[IO] {
-      case GET -> Root / "ping" =>
-        Ok("PONG")
-      case GET -> Root / "test" =>
-        Ok(services.users.confirm("000").map(_.toString))
-    }.orNotFound
+    ): HttpApp[IO] = {
+    import services._
+    val disputeRepository = new DisputeRepository(transactor)
+
+    DisputeInfoRoutes(httpConfig, users, disputeRepository).orNotFound
+  }
 
 }

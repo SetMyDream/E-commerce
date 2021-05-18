@@ -20,7 +20,7 @@ class Server(
     for {
       Config(serverConfig, httpConfig, dbConfig, clientConfig) <- configRes[IO]
       transactor <- transactorRes[IO](dbConfig)
-      _ <- Resource.eval(Migrations.applyMigrations(transactor))
+      _ = Migrations.applyMigrations(transactor)
       services <- servicesRes[IO](clientConfig, httpConfig)
       httpApp = initHttpApp(httpConfig, transactor, services)
       server <- serverRes(serverConfig, httpApp)

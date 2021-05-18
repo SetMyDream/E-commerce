@@ -1,7 +1,7 @@
 package services
 
 import config.HttpConfig
-import services.exceptions.Unauthorized
+import services.exceptions.AuthException
 import services.model.UserIdentity
 
 import cats.syntax.functor._
@@ -20,7 +20,7 @@ class UserService[F[_]: Sync](
       httpConfig: HttpConfig) {
 
   /** Ask user management service for userId given the auth token */
-  def confirm(token: String): F[Either[Unauthorized.type, Long]] = {
+  def confirm(token: String): F[Either[AuthException.Unauthorized.type, Long]] = {
     val tokenHeader = Header(httpConfig.authTokenHeader, token)
     val request = Request[F](
       uri = baseTargetURI / "user",
@@ -28,9 +28,10 @@ class UserService[F[_]: Sync](
     )
     client
       .expect[UserIdentity](request)
-      .map(_.id.asRight[Unauthorized.type])
+      .map(_.id.asRight[AuthException.Unauthorized.type])
       .recover {
-        case UnexpectedStatus(Unauthorized401) => Unauthorized.asLeft[Long]
+        case UnexpectedStatus(Unauthorized401) =>
+          AuthException.Unauthorized.asLeft[Long]
       }
   }
 

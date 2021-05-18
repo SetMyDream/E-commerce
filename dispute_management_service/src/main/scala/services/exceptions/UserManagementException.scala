@@ -1,5 +1,9 @@
 package services.exceptions
 
-trait UserManagementException
+sealed trait UserManagementException
 
-case object Unauthorized extends UserManagementException
+sealed trait AuthException extends UserManagementException
+object AuthException {
+  case object Unauthorized extends AuthException
+  case object Forbidden extends AuthException
+}
