@@ -9,7 +9,7 @@ import play.api.libs.json.JsValue
  * To provide sanitization for chat messages.
  */
 trait InputSanitizer {
-  def sanitize(input: JsValue): String
+  def sanitize(input: String): String
 }
 
 class JSoupInputSanitizer extends InputSanitizer {
