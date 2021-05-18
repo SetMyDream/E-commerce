@@ -1,4 +1,5 @@
 import config.HttpConfig
+import services.ServicesHandler.Services
 
 import cats.effect.IO
 import doobie.util.transactor.Transactor
@@ -10,13 +11,13 @@ package object routes {
 
   def initHttpApp(
       httpConfig: HttpConfig,
-      transactor: Transactor[IO]
-    ): HttpApp[IO] = {
-    HttpRoutes
-      .of[IO] { case GET -> Root / "ping" =>
+      transactor: Transactor[IO],
+      services: Services[IO]
+    ): HttpApp[IO] = HttpRoutes.of[IO] {
+      case GET -> Root / "ping" =>
         Ok("PONG")
-      }
-      .orNotFound
-  }
+      case GET -> Root / "test" =>
+        Ok(services.users.confirm("000").map(_.toString))
+    }.orNotFound
 
 }

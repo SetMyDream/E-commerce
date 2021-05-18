@@ -22,7 +22,7 @@ class Server(
       transactor <- transactorRes[IO](dbConfig)
       _ <- Resource.eval(Migrations.applyMigrations(transactor))
       services <- servicesRes[IO](clientConfig, httpConfig)
-      httpApp = initHttpApp(httpConfig, transactor)
+      httpApp = initHttpApp(httpConfig, transactor, services)
       server <- serverRes(serverConfig, httpApp)
     } yield server
   }
