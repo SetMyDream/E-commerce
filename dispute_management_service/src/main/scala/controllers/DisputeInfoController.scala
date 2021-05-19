@@ -21,6 +21,8 @@ class DisputeInfoController[F[_]: Sync](repository: DisputeRepository[F]) {
     )
   } yield accessedDispute
 
+  def list(userId: Long): F[List[Dispute]] = repository.list(userId)
+
   private def accessible(
       dispute: Dispute,
       userId: Long

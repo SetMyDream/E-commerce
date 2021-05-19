@@ -26,7 +26,8 @@ object DisputeInfoRoutes {
             case Right(dispute) => dispute.fold(NotFound())(Ok(_))
             case Left(AuthException.Forbidden) => Forbidden()
           }
-
+        case GET -> Root / "list" / "all" as userId =>
+          Ok(ctrl.list(userId))
       }
     }
   }
