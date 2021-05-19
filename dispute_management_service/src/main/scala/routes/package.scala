@@ -1,6 +1,7 @@
 import config.HttpConfig
 import services.ServicesHandler.Services
 import storage.db.repo.DisputeRepository
+import routes.middleware.UserAuthMiddleware
 
 import cats.effect.IO
 import doobie.util.transactor.Transactor
@@ -14,10 +15,10 @@ package object routes {
       transactor: Transactor[IO],
       services: Services[IO]
     ): HttpApp[IO] = {
-    import services._
+    val authMiddleware = new UserAuthMiddleware(httpConfig, services.users)
     val disputeRepository = new DisputeRepository(transactor)
 
-    DisputeInfoRoutes(httpConfig, users, disputeRepository).orNotFound
+    DisputeInfoRoutes(authMiddleware, disputeRepository).orNotFound
   }
 
 }

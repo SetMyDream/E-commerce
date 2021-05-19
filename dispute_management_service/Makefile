@@ -1,3 +1,6 @@
+local:
+	make -j 2 db-local users-local
+
 db-local:
 	cd .. && \
 	docker-compose run --rm \
