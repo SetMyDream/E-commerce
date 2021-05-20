@@ -1,9 +1,8 @@
-
 import storage.db.ProductsTableRepository
 import storage.ProductRepository
+import commands.vault.vaultConnection
 
 import play.api.{Configuration, Environment}
-
 import net.codingwell.scalaguice.ScalaModule
 import com.google.inject.AbstractModule
 
@@ -16,5 +15,6 @@ class Module(environment: Environment, configuration: Configuration)
 
   override def configure = {
     bind[ProductRepository].to[ProductsTableRepository]
+    bind[VaultConnection].asEagerSingleton()
   }
 }
