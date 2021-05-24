@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
 //      "org.scalatest" %% "scalatest" % "3.2.5" % "test",
       "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
       specs2 % Test,
+      cacheApi,
       ws,
     ),
     scalacOptions ++= Seq(

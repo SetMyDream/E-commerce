@@ -74,7 +74,7 @@ services:
 
   product_incentory_db:
     image: postgres:13-alpine
-    container_name: ecomm-product-db
+    container_name: ecomm-product_inventory-db
     user: postgres
     volumes:
       - ./dispute_management_service/.postgres_data:/var/lib/postgresql/data
@@ -82,6 +82,8 @@ services:
       POSTGRES_DB: products
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      VAULT_API_PATH: http://vault:8200/v1
+      VAULT_INIT_CREDENTIALS_PATH: /vault/credentials.json
     ports:
       - "9083:5432"
 
