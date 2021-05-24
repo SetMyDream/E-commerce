@@ -67,10 +67,29 @@ class DisputeInfoFuncSpec
         val request = makeGetRequest(Uri(path = "/info/" + dispute.id), authHeader)
 
         val service = mock[UserServiceIO]
-        service.confirm _ expects authHeader.value returning Some(unconcernedUserId).pure[IO]
+        service.confirm _ expects authHeader.value returning Some(unconcernedUserId)
+          .pure[IO]
 
         val response = disputeInfoRoutes(repo, service).run(request)
         check(response, Forbidden, none[Dispute])
+    }
+
+    "return a list of disputes related to the user" in withMockDispute { dispute =>
+      val authHeader = Header(httpConfig.authTokenHeader, "authToken")
+      val request = makeGetRequest(Uri(path = "/list/all"), authHeader)
+
+      val userId = dispute.buyerId
+      val service = mock[UserServiceIO]
+      service.confirm _ expects authHeader.value returning Some(userId).pure[IO]
+
+      val repo = mock[DisputeRepositoryIO]
+      val disputes = for {
+        i <- (userId + 1 to userId + 3).toList
+      } yield dispute.copy(i, userId, i, i)
+      repo.list _ expects * returning IO.pure(disputes)
+
+      val response = disputeInfoRoutes(repo, service).run(request)
+      check(response, Ok, disputes.some)
     }
   }
 
