@@ -27,7 +27,7 @@ libraryDependencies ++= {
     "com.beachape"          %% "enumeratum-quill"        % enumeratumVersion,
     "org.scalatest"         %% "scalatest"               % "3.2.9"   % Test,
     "org.scalatestplus"     %% "scalacheck-1-15"         % "3.2.9.0" % Test,
-    "org.mockito"           %% "mockito-scala-scalatest" % "1.16.37" % Test
+    "org.scalamock"         %% "scalamock"               % "5.1.0"   % Test,
   )
 }
 
@@ -44,12 +44,12 @@ scalacOptions ~= (_.filterNot(
     "-Wunused:locals",
     "-Wunused:params",
     "-Wunused:patvars",
-    "-Wunused:privates",
+    "-Wunused:privates"
   )
 ))
 
 scalacOptions in Test ~= (_.filterNot(
   Set(
-    "-Wdead-code",
+    "-Wdead-code"
   )
 ))

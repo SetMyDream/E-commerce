@@ -9,10 +9,12 @@ import routes.middleware.UserAuthMiddleware
 import cats.data.Kleisli
 import cats.syntax.option._
 import cats.effect.IO
-import org.http4s.{Request, Response}
-import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import doobie.util.transactor.Transactor
+import org.http4s.client.Client
+import org.http4s.{Request, Response, Uri}
+import org.scalamock.scalatest.MockFactory
 
-trait LocalTestApp extends MockitoSugar with ArgumentMatchersSugar {
+trait LocalTestApp extends MockFactory {
   final val httpConfig = HttpConfig("X-Auth-Token")
 
   def disputeInfoRoutes(
@@ -25,9 +27,18 @@ trait LocalTestApp extends MockitoSugar with ArgumentMatchersSugar {
   }
 
   def defaultUserService(userId: Long): UserService[IO] = {
-    val service = mock[UserService[IO]]
-    when(service.confirm(*)) thenReturn IO.pure(userId.some)
+    val service = stub[UserServiceIO]
+    service.confirm _ when * returns IO.pure(userId.some)
     service
   }
+
+  class UserServiceIO(
+        client: Client[IO],
+        baseTargetURI: Uri,
+        httpConfig: HttpConfig)
+        extends UserService[IO](client, baseTargetURI, httpConfig)
+
+  abstract class DisputeRepositoryIO(transactor: Transactor[IO])
+        extends DisputeRepository[IO](transactor)
 
 }
