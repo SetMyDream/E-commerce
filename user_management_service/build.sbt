@@ -1,6 +1,6 @@
 name := "user_management"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.6"
 
 enablePlugins(PlayService, PlayLayoutPlugin)
 
