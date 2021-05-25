@@ -66,12 +66,10 @@ services:
       - "8084:8080"
 
   user_management:
-    build:
-      context: .
-      target: user_management_service
+    image: ecomm-user:1.0.0
     container_name: ecomm-user
+    user: userman-daemon
     volumes:
-      - ./user_management_service/target/web/public/:/app/target/web/public/
       - user_management_credentials:/vault
     environment:
       POSTGRES_USER: postgres
