@@ -10,7 +10,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 
-/** A custom identity service for the [[User]] model. */
+/** A custom identity service for the User model. */
 class UserService @Inject() (
       userRepository: UserRepository
     )(implicit ec: ExecutionContext)
