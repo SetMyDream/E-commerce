@@ -3,7 +3,7 @@ FROM adoptopenjdk/openjdk11:alpine AS scala_app
 ENV SBT_VER="1.4.7"
 ENV SBT_SHA256="c2a759fe40a3c21a16b5a88d00cd66f3af6f0721e4ea61b63942dfb83a2d54fd"
 
-ENV SCALA_VER="2.13.4"
+ENV SCALA_VER="2.13.6"
 
 # Install sbt
 RUN set -x \
