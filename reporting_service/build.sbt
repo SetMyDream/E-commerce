@@ -1,6 +1,6 @@
 name := "reporting_service"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.6"
 
 libraryDependencies ++= {
   val http4sVersion = "0.21.+"
