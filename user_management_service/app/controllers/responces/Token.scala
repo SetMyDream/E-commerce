@@ -9,8 +9,8 @@ import play.api.libs.json._
  * Silhouette to JSON.
  * @param token a 257-character hash string for the auth header
  * @param expiresOn token expiration datetime. It's type
- * [[org.joda.time.DateTime]] is the same as
- * [[com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator.expirationDateTime]]'s
+ * org.joda.time.DateTime is the same as
+ * com.mohiva.play.silhouette.impl.authenticators.BearerTokenAuthenticator.expirationDateTime's
  * because otherwise we would need to convert joda's DateTime
  * to it's Java SDK alternative to just immediately serialize it to JSON
  * and send it to the user, which is unnecessary and expensive IMO.
@@ -31,7 +31,7 @@ object Token {
   implicit val format = Json.format[Token]
   final val httpHeaderName = "X-Auth-Token"
 
-  /** Used for defining [[io.swagger.annotations.Authorization]] */
+  /** Used for defining io.swagger.annotations.Authorization */
   final val docsKey = "token"
   final val docsDescription = "Session token header"
 }

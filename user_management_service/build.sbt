@@ -1,6 +1,7 @@
-name := "user_management"
+name := "ecomm-user"
+version := "1.0.0"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.6"
 
 enablePlugins(PlayService, PlayLayoutPlugin)
 
@@ -43,9 +44,18 @@ scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
-  "-Ywarn-numeric-widen",
+  "-Wnumeric-widen",
   "-Xfatal-warnings"
 )
-scalacOptions in Test ++= Seq("-Yrangepos")
 
 autoAPIMappings := true
+
+enablePlugins(DockerPlugin)
+Docker / daemonUser := "userman-daemon"
+
+// Fixes java.nio.file.AccessDeniedException when started from Docker
+// https://stackoverflow.com/questions/56153102
+Universal / javaOptions ++= Seq(
+  "-Dpidfile.path=/dev/null"
+)
+

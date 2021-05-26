@@ -1,35 +1,52 @@
 # Dispute management service
 [![Services](https://img.shields.io/badge/%E2%AC%85-Back-green.svg)](../README.md)
 
-- Any user can list the disputes in which he is involved
-  `User shouldn't see disputes in which he is not involved`
-
 - When a user buys a product, he can raise a dispute against seller
-    - If the buyer got the wrong item, the buyer wants to start a dispute. Dispute's topic is **"$Item not as described"**
-        - When the **"Item not as described"** dispute has started, it notifies the seller
-        - The seller has the right to demand the buyer to send the item back
-        - There are three ways to act on the **"Item not as described"** dispute:
-          `Any operation aside from "Wait" should be approved by the seller`
-            - Wait (pauses any other operation over)
-            - The seller gives a refund to the buyer
-            - The seller resend propper product
+- Any user can list the disputes in which they are involved
+  > User shouldn't see disputes in which they are not involved
+- Both users have options to resolve disputes in which the are involved
+  > Users act on disputes with chat commands. System notifies the other party
 
+## Dispute options
 
-- If in the described time the item hasn't arrived, the buyer wants to start a dispute. Dispute's topic is **"${Item not arrived}"**
-    - When the **"Item not arrived"** dispute has started, it notifies the seller
-    - There are two ways to resolve **"Item not arrived"** dispute:
-        - Wait (pauses any other operation over the dispute;
-          item arrives after a certain time)
-        - The seller gives a refund to the buyer
-          `Should be approved by the seller`
+### Item is not as described
+  - *(For the seller)* **provide refund to the buyer** *(approves refund)*
+  - *(For the buyer)* **send the item back** *(automatically invokes refund)*
+### Item has not arrived
+  - *(For the seller)* **provide refund to the buyer** *(approves refund)*
+  - *(For both)* **wait** *(system simulates item arrival)*
 
 ## Endpoints
-1. List all disputes, where the user is involved
-> (user_id: ID): JSON(disputes_list)
-2. Go to dispute
-> (dispute_id: ID): JSON(dispute_page)
+1. List all disputes relevant to the user
+> (user_auth_token)() => disputes_list
+2. Start "Item is not as described" dispute
+> (buyer_auth_token)(purchace_id: ID) => Ok
+3. Start "Item has not arrived" dispute
+> (buyer_auth_token)(purchace_id: ID) => Ok
+4. Provide refund
+> (seller_auth_token)(dispute_id: ID) => Ok
+5. Return item
+> (buyer_auth_token)(dispute_id: ID) => Ok
+6. Wait
+> (user_auth_token)(dispute_id: ID) => Ok
 
 ## Used
-- Akka-http & tapir - because there are not so many endpoints
+- http4s - as a minimal interface for building an HTTP service
 
----
+## Infrastructure dependencies
+
+### User management
+- [x] Get self
+> (auth_token)() => user_info
+
+### Product inventory
+- [ ] Get purchase info
+> (buyer_auth_token OR seller_auth_token)(purchase_id) => purchase_info
+- [ ] Update purchase status
+> (purchase_id, new_status, vault_TOTP_code) => Ok
+- [ ] Refund purchase
+> (purchase_id, vault_TOTP_code) => Ok
+
+### Chat
+- [ ] Notify as system
+> (user_id, message) => Ok

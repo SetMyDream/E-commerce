@@ -1,6 +1,6 @@
 name := "disp-man"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.6"
 
 libraryDependencies ++= {
   val http4sVersion = "0.21.22"
@@ -33,7 +33,7 @@ libraryDependencies ++= {
 
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 addCompilerPlugin(
-  "org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full
+  "org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full
 )
 
 scalacOptions ~= (_.filterNot(

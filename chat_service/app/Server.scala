@@ -34,11 +34,11 @@ object Server {
 
   private sealed trait Response
   private final case class Broadcast(command: ServerCommand) extends Response
-  private final case class DirectResponse(command: ServerCommand)
-      extends Response
+  private final case class DirectResponse(command: ServerCommand) extends Response
+  private final case class Whisper(command: ClientCommand) extends Response
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem("server")
+    implicit val system = ActorSystem("mainRoom")
     implicit val materializer = ActorMaterializer()
     import system.dispatcher
 
@@ -164,6 +164,7 @@ object Server {
             (
               new Running(connectionId, newUsername, users),
               DirectResponse(Welcome(newUsername, "Welcome to User Chat!"))
+
             )
           } else {
             (this, DirectResponse(Disconnect(s"${newUsername.name} already taken")))
@@ -185,6 +186,17 @@ object Server {
           DirectResponse(Alert(users.keys().asScala.map(_.name).mkString(", ")))
         case ClientCommand.SendMessage(msg) if msg.startsWith("/") =>
           DirectResponse(Alert("Unknown command"))
+        case ClientCommand.SendMessage(cmd) if cmd.startsWith("@") =>
+          {
+            val user = cmd.substring(cmd.indexOf(''), cmd.indexOf(']'))
+            val msg = cmd.substring(cmd.findFirst(' ')+1))
+            Whisper(Protocol.ServerCommand.Message(user, msg)
+          }
+        case ClientCommand.SendMessage(cmd) if cmd.startsWith("/chatTo") =>
+        {
+          val userList = cmd.split(' ').skip(1)
+          CreateChat(userList)
+        }
         case ClientCommand.SendMessage(msg) =>
           Broadcast(Protocol.ServerCommand.Message(username, msg))
       }

@@ -43,7 +43,10 @@ class VaultCommandsSpec extends AnyFlatSpec with Matchers {
       }
     } { implicit port =>
       WsTestClient.withClient { client =>
-        val config = Configuration("vault.api.path" -> "")
+        val config = Configuration(
+          "vault.api.path" -> "",
+          "vault.api.totp.keyPrefix" -> "finance__"
+        )
         val commandsAPI = new VaultCommands(client, config, null)
         val responseTimeout = Timeout(Span(1000, Millis))
         commandsAPI
