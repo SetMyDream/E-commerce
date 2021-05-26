@@ -72,9 +72,9 @@ services:
     depends_on:
       - vault
 
-  product_incentory_db:
+  product_inventory_db:
     image: postgres:13-alpine
-    container_name: ecomm-product_inventory-db
+    container_name: ecomm-product-db
     user: postgres
     volumes:
       - ./dispute_management_service/.postgres_data:/var/lib/postgresql/data
