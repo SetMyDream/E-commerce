@@ -16,4 +16,12 @@ object Migrations {
       }
     }.void
 
+  def unapplyMigrations[F[_]: Sync](transactor: HikariTransactor[F]): F[Unit] =
+    transactor.configure { dataSource =>
+      Sync[F].delay {
+        val flyway = Flyway.configure().dataSource(dataSource).load()
+        flyway.clean()
+      }
+    }.void
+
 }
