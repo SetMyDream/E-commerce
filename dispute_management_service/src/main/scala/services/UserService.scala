@@ -14,17 +14,16 @@ import org.http4s.circe.CirceEntityDecoder._
 import io.circe.generic.auto._
 
 class UserService[F[_]: Sync](
-      client: Client[F],
-      baseTargetURI: Uri,
+      val client: Client[F],
+      val baseTargetURI: Uri,
       httpConfig: HttpConfig) {
 
   /** Ask user management service for userId given the auth token */
   def confirm(token: String): F[Option[Long]] = {
     val tokenHeader = Header(httpConfig.authTokenHeader, token)
     val request = Request[F](
-      uri = baseTargetURI / "user",
-      headers = Headers.of(tokenHeader)
-    )
+      uri = baseTargetURI / "user"
+    ).withHeaders(tokenHeader)
     client
       .expect[UserIdentity](request)
       .map(_.id.some)
