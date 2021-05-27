@@ -4,7 +4,8 @@ import config.DbConfig
 import storage.db.{transactorRes, Migrations}
 
 import cats.effect._
-import doobie.Transactor
+import cats.effect.syntax.bracket._
+import doobie._
 import doobie.hikari.HikariTransactor
 
 object TestingDb {
@@ -26,7 +27,7 @@ object TestingDb {
     } yield transactor
   }
 
-  def withMigrations(transactor: HikariTransactor[IO]): Resource[IO, Unit] =
+  def migrations(transactor: HikariTransactor[IO]): Resource[IO, Unit] =
     Resource.make {
       Migrations.applyMigrations(transactor)
     } { _ => Migrations.unapplyMigrations(transactor) }
@@ -37,14 +38,29 @@ object TestingDb {
     ): Resource[IO, Int] = {
     import doobie.implicits._
     Resource.make {
-      sql"""
-        |DROP DATABASE IF EXISTS $DB_NAME;
-        |CREATE DATABASE $DB_NAME")""".stripMargin.update.run.transact(transactor)
+      val query = for {
+        _ <- (fr"DROP DATABASE IF EXISTS" ++ Fragment.const(DB_NAME)).update.run
+        create <- (fr"CREATE DATABASE" ++ Fragment.const(DB_NAME)).update.run
+      } yield create
+      runWithoutTransaction(query).transact(transactor)
     } { _ =>
-      sql"""
-        |SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$DB_NAME';
-        |DROP DATABASE $DB_NAME""".stripMargin.update.run.transact(transactor).void
+      val query = for {
+        // @formatter:off
+        _ <- (fr"""
+             |DO '
+             |BEGIN
+             |  PERFORM pg_terminate_backend(pid) FROM pg_stat_activity
+             |  WHERE datname = ''"""
+             .stripMargin ++ Fragment.const(DB_NAME) ++ fr"''; END; ';")
+             .update.run
+        // @formatter:on
+        _ <- (fr"DROP DATABASE" ++ Fragment.const(DB_NAME)).update.run
+      } yield ()
+      runWithoutTransaction(query).transact(transactor).void
     }
   }
+
+  def runWithoutTransaction[A](p: ConnectionIO[A]): ConnectionIO[A] =
+    FC.setAutoCommit(true).bracket(_ => p)(_ => FC.setAutoCommit(false))
 
 }
