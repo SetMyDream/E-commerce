@@ -16,7 +16,7 @@ object TestingDb {
     )(implicit
       cs: ContextShift[IO],
       as: Async[IO]
-    ): Resource[IO, Transactor[IO]] = {
+    ): Resource[IO, HikariTransactor[IO]] = {
     val testDbUrl = mainConfig.url.split("(?<=:\\d{4})/").head + '/' + DB_NAME
     val testConfig = mainConfig.copy(url = testDbUrl)
 

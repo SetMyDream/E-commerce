@@ -108,6 +108,6 @@ class DisputeInfoFuncSpec
       uri: Uri,
       headers: Header*
     ): Request[IO] =
-    Request[IO](uri = uri, headers = Headers.of(headers: _*))
+    Request[IO](uri = uri).withHeaders(headers: _*)
 
 }
