@@ -37,8 +37,8 @@ class UserResourceHandler @Inject() (
       _password: String,
       initialAccount: BigDecimal = 10000
     ): Future[Either[UserStorageException, (LoginInfo, Long)]] = {
-    val username = _username.strip
-    val password = _password.strip
+    val username = _username.trim
+    val password = _password.trim
 
     Seq(
       checkForLength(username, "username"),
