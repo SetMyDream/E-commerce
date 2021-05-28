@@ -39,21 +39,14 @@ object TestingDb {
     import doobie.implicits._
     Resource.make {
       val query = for {
+        _ <- disconnectUnclearedConnections
         _ <- (fr"DROP DATABASE IF EXISTS" ++ Fragment.const(DB_NAME)).update.run
         create <- (fr"CREATE DATABASE" ++ Fragment.const(DB_NAME)).update.run
       } yield create
       runWithoutTransaction(query).transact(transactor)
     } { _ =>
       val query = for {
-        // @formatter:off
-        _ <- (fr"""
-             |DO '
-             |BEGIN
-             |  PERFORM pg_terminate_backend(pid) FROM pg_stat_activity
-             |  WHERE datname = ''"""
-             .stripMargin ++ Fragment.const(DB_NAME) ++ fr"''; END; ';")
-             .update.run
-        // @formatter:on
+        _ <- disconnectUnclearedConnections
         _ <- (fr"DROP DATABASE" ++ Fragment.const(DB_NAME)).update.run
       } yield ()
       runWithoutTransaction(query).transact(transactor).void
@@ -62,5 +55,17 @@ object TestingDb {
 
   def runWithoutTransaction[A](p: ConnectionIO[A]): ConnectionIO[A] =
     FC.setAutoCommit(true).bracket(_ => p)(_ => FC.setAutoCommit(false))
+
+  def disconnectUnclearedConnections = {
+    import doobie.implicits._
+    // @formatter:off
+    (fr"""
+       |DO '
+       |BEGIN
+       |  PERFORM pg_terminate_backend(pid) FROM pg_stat_activity
+       |  WHERE datname = ''""".stripMargin ++ Fragment.const(DB_NAME) ++ fr"''; END; ';")
+       .update.run
+    // @formatter:on
+  }
 
 }
