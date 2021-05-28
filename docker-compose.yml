@@ -77,7 +77,7 @@ services:
     container_name: ecomm-product-db
     user: postgres
     volumes:
-      - ./dispute_management_service/.postgres_data:/var/lib/postgresql/data
+      - ./product_inventory_service/.postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: products
       POSTGRES_USER: postgres
