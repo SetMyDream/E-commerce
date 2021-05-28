@@ -8,25 +8,25 @@ import storage.ProductResourceHandler
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-
-/** Packages up the component dependencies for the post controller.
+/**
+ * Packages up the component dependencies for the post controller.
  *
  * This is a good way to minimize the surface area exposed to the controller, so the
  * controller only has to have one thing injected.
  */
-case class ProductControllerComponents @Inject()(
-    productResourceHandler: ProductResourceHandler,
-    actionBuilder: DefaultActionBuilder,
-    parsers: PlayBodyParsers,
-    fileMimeTypes: FileMimeTypes,
-    langs: Langs,
-    messagesApi: MessagesApi,
-    executionContext: ExecutionContext)
-    extends ControllerComponents
+case class ProductControllerComponents @Inject() (
+      productResourceHandler: ProductResourceHandler,
+      actionBuilder: DefaultActionBuilder,
+      parsers: PlayBodyParsers,
+      fileMimeTypes: FileMimeTypes,
+      langs: Langs,
+      messagesApi: MessagesApi,
+      executionContext: ExecutionContext)
+      extends ControllerComponents
 
 /** To make integrating some ProductController dependencies easier */
-class ProductBaseController  @Inject()(ucc: ProductControllerComponents)
-    extends BaseController {
+class ProductBaseController @Inject() (ucc: ProductControllerComponents)
+      extends BaseController {
 
   override protected def controllerComponents: ControllerComponents = ucc
 

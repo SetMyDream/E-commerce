@@ -1,17 +1,18 @@
-name := """product_inventory"""
+name := "product_inventory"
 
 version := "1.0-SNAPSHOT"
 val AkkaVersion = "2.5.31"
+val SlickVersion = "5.0.0"
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, DockerPlugin, PlayLayoutPlugin)
+  .enablePlugins(PlayScala, PlayService, DockerPlugin, PlayLayoutPlugin)
   .settings(
     name := """play-scala-slick-example""",
     version := "2.8.x",
     scalaVersion := "2.13.4",
     libraryDependencies ++= Seq(
       guice,
-      "com.typesafe.play" %% "play-slick" % "5.0.0",
-      "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0",
+      "com.typesafe.play" %% "play-slick" % SlickVersion,
+      "com.typesafe.play" %% "play-slick-evolutions" % SlickVersion,
       "com.typesafe.slick" %% "slick" % "3.3.2",
       "org.postgresql" % "postgresql" % "42.1.4",
       "com.lightbend.akka" %% "akka-stream-alpakka-slick" % "2.0.2",
@@ -20,6 +21,8 @@ lazy val root = (project in file("."))
 //      "org.scalatest" %% "scalatest" % "3.2.5" % "test",
       "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
       specs2 % Test,
+      cacheApi,
+      ws,
     ),
     scalacOptions ++= Seq(
       "-feature",
@@ -65,6 +68,12 @@ scalacOptions ++= Seq(
 )
 
 scalacOptions in Test ++= Seq("-Yrangepos")
+
+resolvers += "Atlassian's Maven Public Repository" at "https://packages.atlassian.com/maven-public/"
+
+scalafmtConfig := baseDirectory.value / "conf" / "formatting.scalafmt.conf"
+
+autoAPIMappings := true
 
 javacOptions ++= Seq(
   "-Xlint:unchecked",

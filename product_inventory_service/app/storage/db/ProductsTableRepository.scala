@@ -16,7 +16,8 @@ import slick.sql.SqlProfile.ColumnOption.NotNull
 @Singleton
 class ProductsTableRepository @Inject()(
                                          dbConfigProvider: DatabaseConfigProvider
-                                       )(implicit ec: ExecutionContext) extends ProductRepository {
+                                       )(
+  implicit ec: ExecutionContext) extends ProductRepository {
 
   protected val dbConfig = dbConfigProvider.get[JdbcProfile]
 
