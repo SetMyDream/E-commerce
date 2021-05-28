@@ -1,5 +1,6 @@
 package commands.vault.auth
 
+import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.util.Timeout
@@ -7,7 +8,7 @@ import play.api.libs.json.{JsValue, Json}
 
 import java.io.FileInputStream
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.{Failure, Success, Using}
 
 object CredentialsFetcher {

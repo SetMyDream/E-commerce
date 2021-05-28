@@ -12,9 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VaultCommands @Inject() (
-                                ws: WSClient,
-                                config: Configuration,
-                                cache: AsyncCacheApi) {
+      ws: WSClient,
+      config: Configuration,
+      cache: AsyncCacheApi) {
   val API_PATH = config.get[String]("vault.api.path")
   val TOTP_KEY_PREFIX = config.get[String]("vault.api.totp.keyPrefix")
   val AUTH_TOKEN_HTTP_HEADER = "X-Vault-Token"
@@ -29,10 +29,10 @@ class VaultCommands @Inject() (
   def keyName(keyPostfix: String) = TOTP_KEY_PREFIX + keyPostfix
 
   protected[vault] def generateTOTPKey(
-                                        authToken: String
-                                      )(keyPostfix: String,
-                                        accountName: String
-                                      ): Future[WSResponse] = {
+      authToken: String
+    )(keyPostfix: String,
+      accountName: String
+    ): Future[WSResponse] = {
     val payload = Json.obj(
       "generate" -> true,
       "exported" -> false,
@@ -44,12 +44,12 @@ class VaultCommands @Inject() (
   }
 
   protected[vault] def validateTOTPCode(
-                                         authToken: String
-                                       )(keyPostfix: String,
-                                         code: String
-                                       )(implicit
-                                         ec: ExecutionContext
-                                       ): Future[Boolean] = {
+      authToken: String
+    )(keyPostfix: String,
+      code: String
+    )(implicit
+      ec: ExecutionContext
+    ): Future[Boolean] = {
     val payload = Json.obj("code" -> code)
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
@@ -59,11 +59,11 @@ class VaultCommands @Inject() (
   }
 
   protected[vault] def generateTOTPCode(
-                                         authToken: String
-                                       )(keyPostfix: String
-                                       )(implicit
-                                         ec: ExecutionContext
-                                       ): Future[String] =
+      authToken: String
+    )(keyPostfix: String
+    )(implicit
+      ec: ExecutionContext
+    ): Future[String] =
     for {
       res <- authenticatedRequest(authToken)("/totp/code/" + keyName(keyPostfix))
         .get()
@@ -74,9 +74,9 @@ class VaultCommands @Inject() (
     ws.url(API_PATH + uri).withHttpHeaders(AUTH_TOKEN_HTTP_HEADER -> authToken)
 
   def login(
-             credentials: AppRoleCredentials
-           )(implicit ec: ExecutionContext
-           ): Future[String] = {
+      credentials: AppRoleCredentials
+    )(implicit ec: ExecutionContext
+    ): Future[String] = {
     val loginPayload = Json.obj(
       "role_id" -> credentials.role_id,
       "secret_id" -> credentials.secret_id

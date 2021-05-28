@@ -16,7 +16,7 @@ import play.api.libs.json.Json
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Controls access to the backend data, returning [[UserResource]] */
+/** Controls access to the backend data, returning UserResource */
 class UserResourceHandler @Inject() (
       val userRepository: UserRepository,
       authInfoRepository: AuthInfoRepository,
