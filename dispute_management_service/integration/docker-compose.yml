@@ -1,0 +1,88 @@
+version: "3.8"
+
+services:
+
+  vault:
+    build:
+      context: ../../vault
+      target: vault-dev
+    container_name: ecomm-vault-dispute-it
+    cap_add: [IPC_LOCK]
+    volumes:
+      - dispute_management_credentials:/services/dispute_management
+      - product_inventory_credentials:/services/product_inventory
+      - user_management_credentials:/services/user_management
+    ports:
+      - "8200:8200"
+
+  dispute_management:
+    build:
+      context: ../
+      target: dispute_management_service
+    container_name: ecomm-dispute-dispute-it
+    volumes:
+      - dispute_management_credentials:/vault
+    environment:
+      SERVICE_PORT: 8080
+      DB_URL: jdbc:postgresql://dispute_management_db:5432/disputes
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8082:8080"
+    depends_on:
+      - vault
+      - dispute_management_db
+
+  dispute_management_db:
+    image: postgres:13-alpine
+    container_name: ecomm-dispute-db-dispute-it
+    user: postgres
+    environment:
+      POSTGRES_DB: disputes
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "9082:5432"
+
+  user_management:
+    image: ecomm-user:1.0.0
+    container_name: ecomm-user-dispute-it
+    user: userman-daemon
+    volumes:
+      - user_management_credentials:/vault
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      JDBC_POSTGRES_URL: jdbc:postgresql://user_management_db:5432/users
+      VAULT_API_PATH: http://vault:8200/v1
+      VAULT_INIT_CREDENTIALS_PATH: /vault/credentials.json
+    ports:
+      - "8085:9000"
+    depends_on:
+      - user_management_db
+      - vault
+
+  user_management_db:
+    image: postgres:13-alpine
+    container_name: ecomm-user-db-dispute-it
+    user: postgres
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "9085:5432"
+
+volumes:
+  dispute_management_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+  product_inventory_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+  user_management_credentials:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
