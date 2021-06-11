@@ -25,10 +25,10 @@ case class ProductControllerComponents @Inject() (
       extends ControllerComponents
 
 /** To make integrating some ProductController dependencies easier */
-class ProductBaseController @Inject() (ucc: ProductControllerComponents)
-      extends BaseController {
+class ProductBaseController @Inject() (pcc: ProductControllerComponents)
+  extends BaseController {
 
-  override protected def controllerComponents: ControllerComponents = ucc
+  override protected def controllerComponents: ControllerComponents = pcc
 
-  def productResourceHandler: ProductResourceHandler = ucc.productResourceHandler
+  def productResourceHandler: ProductResourceHandler = pcc.productResourceHandler
 }

@@ -13,6 +13,3 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.15.0")
 // Load testing tool:
 // http://gatling.io/docs/2.2.2/extensions/sbt_plugin.html
 addSbtPlugin("io.gatling" % "gatling-sbt" % "3.0.0")
-
-// Scala formatting: "sbt scalafmt"
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "2.4.2")
