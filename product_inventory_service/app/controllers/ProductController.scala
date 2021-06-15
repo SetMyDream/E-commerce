@@ -4,11 +4,13 @@ import exceptions.StorageException.{IllegalFieldValuesException, UnknownDatabase
 
 import play.api.libs.json.Json
 import play.api.mvc._
+import io.swagger.annotations._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Takes HTTP requests and produces response futures. */
+@Api(value = "Product inventory API")
 class ProductController @Inject() (
       cc: ProductControllerComponents
     )(implicit ec: ExecutionContext)
